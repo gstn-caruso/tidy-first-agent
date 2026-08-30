@@ -31,7 +31,7 @@ El agente lee `examples/NN-*.md` antes de aplicar cada tidying para verificar qu
 ./install.sh
 ```
 
-Copia `agents/tidier.md` a `~/.claude/agents/tidier.md`. Claude Code carga los agentes al arrancar la sesión: si ya tenías una abierta, reiniciala para que aparezca `tidier` en la lista.
+Copia `agents/tidier.md` a `~/.claude/agents/tidier.md`. Claude Code relee `~/.claude/agents/` entre turnos: en una sesión abierta, `tidier` aparece en la lista de agentes a partir del próximo mensaje (si no, reiniciá la sesión).
 
 ## Usar
 

@@ -12,4 +12,4 @@ if [ -f "$DST" ] && cmp -s "$SRC" "$DST"; then
 fi
 cp "$SRC" "$DST"
 echo "tidier instalado en $DST"
-echo "Si ya tenés una sesión de Claude Code abierta, reiniciala para que el agente aparezca."
+echo "En una sesión abierta aparece a partir del próximo mensaje; si no, reiniciá la sesión."
