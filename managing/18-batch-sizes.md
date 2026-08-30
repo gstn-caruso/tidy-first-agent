@@ -1,6 +1,6 @@
 # 18. Batch Sizes
 
-*Tidy First?*, cap. 18, pp. 43–46.
+*Tidy First?*, ch. 18, pp. 43–46.
 
 > How much tidying should you do before integrating and deploying?
 >
@@ -11,17 +11,17 @@
 >
 > In Chapter 16, I discussed not mixing tidying and behavior changes. But we still have the open question of whether we batch all our tidyings together, do them all separately, or something in between (Figure 18-1).
 
-*(Figura 18-1: Structure changes batched together or separately)*
+*(Figure 18-1: Structure changes batched together or separately)*
 
 > This puts us in a trade-off space, also known as a Goldilocks dilemma. What are the competing costs that let us evaluate what constitutes too few tidyings per batch, too many tidyings per batch, and the range of just the right number of tidyings per batch (Figure 18-2)?
 
-*(Figura 18-2: Trade-off space for tidyings per batch)*
+*(Figure 18-2: Trade-off space for tidyings per batch)*
 
-## Costos que suben al agrandar el batch
+## Costs that rise as the batch grows
 
 > Figure 18-3 shows the costs that rise as we put more tidyings in a batch.
 
-*(Figura 18-3: Costs that rise as batches grow)*
+*(Figure 18-3: Costs that rise as batches grow)*
 
 > These include:
 >
@@ -31,11 +31,11 @@
 >
 > **Speculation** — I know we said we were only going to tidy just enough to support the next behavior change, but yeah. The more tidyings per batch, the more we are prone to tidying just because, with all the additional costs that creates.
 
-## El costo que sube al achicarlo, y qué hacer con él
+## The cost that rises as it shrinks, and what to do about it
 
 > All of these factors reduce the number of tidyings we want in a batch before integrating and deploying (which are the same thing, right?). Yet, I see big batches of tidyings in the wild. What else is going on? Take a look at Figure 18-4.
 
-*(Figura 18-4: Review costs rise as batches shrink)*
+*(Figure 18-4: Review costs rise as batches shrink)*
 
 > In many organizations, the fixed cost of getting a single change through review and deployment is substantial. Programmers feel this cost, so they move right in the trade-off space, even as the costs of collisions, interactions, and speculation rise.
 >
@@ -43,7 +43,7 @@
 >
 > Some folks act like these cost curves are inscribed on stone tablets, laws of the physics of the development universe we merely inhabit. Nope. If we want to reduce the cost of tidying, thus increasing tidying and reducing the cost of making behavior changes, then we can reduce the cost of review (Figure 18-5).
 
-*(Figura 18-5: Reduce the cost of review to reduce the cost of tidying by shrinking batches)*
+*(Figure 18-5: Reduce the cost of review to reduce the cost of tidying by shrinking batches)*
 
 > You and your team are going to need to figure out how exactly to reduce the cost of review. In teams with trust and a strong culture, tidyings don't require review. The risk of interactions has been reduced so far that unreviewed tidying doesn't destabilize the software.
 >
