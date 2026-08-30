@@ -1,12 +1,12 @@
 # 7. Move Declaration and Initialization Together
 
-*Tidy First?*, cap. 7, pp. 15–16.
+*Tidy First?*, ch. 7, pp. 15–16.
 
-## Disparador
+## Prompt
 
 > Variables and their initialization seem to drift apart sometimes. The name of a variable gives you a hint as to its role in the computation. However, the initialization reinforces the message of the name. When you come across code that separates the declaration (with a possible type) and initialization, it's harder to read. By the time you get to the initialization, you've forgotten some of the context of what the variable is *for*.
 
-## Antes
+## Before
 
 > Here's what this tidying looks like. Imagine you have some code like this:
 > ```
@@ -20,7 +20,7 @@
 >     ...some code that uses b
 > ```
 
-## Después
+## After
 
 > Tidy this by moving the initialization up to the declaration:
 > ```
@@ -33,7 +33,7 @@
 > ```
 > Play around with the order. Is it easier to read and understand the code if each of the variables is declared and initialized just before it's used, or if they're all declared and initialized together at the top of the function? This is where you get to be a mystery writer, imagining the experience of a reader of your code and leaving them the clues they need to guess who done it.
 
-## Cuidado — dependencias de datos
+## Caveat — data dependencies
 
 > You can't just put variables and code that sets them in any old order. You must respect the data dependencies between variables. If you use `a` to initialize `b`, you have to initialize `a` first.
 >
