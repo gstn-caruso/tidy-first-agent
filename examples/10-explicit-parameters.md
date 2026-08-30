@@ -14,6 +14,7 @@
 
 ## Antes
 
+> For example, if you see this:
 > ```
 > params = { a: 1, b: 2 }
 > foo(params)
@@ -24,7 +25,7 @@
 
 ## Después
 
-> Make the parameters explicit by splitting foo:
+> Make the parameters explicit by splitting `foo`:
 > ```
 > function foo(params)
 >     foo_body(params.a, params.b)
