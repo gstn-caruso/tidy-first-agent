@@ -4,7 +4,7 @@
 
 ## Disparador
 
-> You read the whole file, and you get to the end and there it is! The detail that would have helped you understand all the rest of the file.
+> Let's say you're reading a file (we can have the debate about whether source code belongs in files some other day). You read the whole file, and you get to the end and there it is! The detail that would have helped you understand all the rest of the file.
 
 ## Movimiento
 
@@ -22,7 +22,7 @@
 
 ## No hay orden perfecto
 
-> Sometimes you want to understand the primitives first and then understand how they compose. Sometimes you want to understand the API first and then understand the details of implementation. You're the reader, so use your judgment and (recent) experience. What order would you have liked to encounter? Give the gift of that sequence to the next reader.
+> No single ordering of elements is perfect. Sometimes you want to understand the primitives first and then understand how they compose. Sometimes you want to understand the API first and then understand the details of implementation. You're the reader, so use your judgment and (recent) experience. What order would you have liked to encounter? Give the gift of that sequence to the next reader.
 
 ## Encadena con (cap. 17)
 
