@@ -4,7 +4,7 @@
 
 ## Disparador
 
-> You read the code, you figure out that to make a behavior change you're going to have to change several widely dispersed spots in the code, and you get grumpy.
+> You read the code, you figure out that to make a behavior change you're going to have to change several widely dispersed spots in the code, and you get grumpy. What should you do?
 
 ## Movimiento
 
@@ -12,7 +12,7 @@
 
 ## ¿Por qué no eliminar el acoplamiento directamente?
 
-> If you know how to do that, go for it. That's the best tidying of all, assuming:
+> Why not just eliminate the coupling? If you know how to do that, go for it. That's the best tidying of all, assuming:
 > ```
 > cost(decoupling) + cost(change) < cost(coupling) + cost(change)
 > ```
@@ -25,4 +25,4 @@
 
 ## Encadena con (cap. 17)
 
-> Elements grouped together for cohesion order are candidates to be extracted into a subelement. Creating, for example, a helper object is out of the scope of tidying.
+> Elements grouped together for cohesion order are candidates to be extracted into a subelement. Creating, for example, a helper object is out of the scope of tidying. As you get comfortable and confident in tidying, though, it's natural to see larger-scale design changes that will ease further behavior changes.
