@@ -1,12 +1,12 @@
 # 19. Rhythm
 
-*Tidy First?*, cap. 19, pp. 47–48.
+*Tidy First?*, ch. 19, pp. 47–48.
 
 > Let's go back to the beginning. You are tidying to make future changes to the behavior of the system easier. You are making future behavior changes easier because you're worth it (we'll get into the economics later, if anyone objects). What are we talking about here? A brief moment, then back to the slog? Hour upon hour of blissful tidying?
 >
 > Part of the art of managing tidying is managing the rhythm of it. In the previous chapter, we saw this image (Figure 19-1), encouraging smaller batches of tidying.
 
-*(Figura 19-1: Structure changes batched together or separately)*
+*(Figure 19-1: Structure changes batched together or separately)*
 
 > How much time is represented in one of those successions of structure changes followed by a behavior change?
 >
