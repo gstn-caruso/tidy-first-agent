@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# Instala (o actualiza) el agente tidier en ~/.claude/agents/.
+# Installs (or updates) the tidier agent in ~/.claude/agents/.
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 SRC="$HERE/agents/tidier.md"
@@ -7,9 +7,9 @@ DST="${CLAUDE_HOME:-$HOME/.claude}/agents/tidier.md"
 
 mkdir -p "$(dirname "$DST")"
 if [ -f "$DST" ] && cmp -s "$SRC" "$DST"; then
-  echo "tidier ya está al día en $DST"
+  echo "tidier is already up to date at $DST"
   exit 0
 fi
 cp "$SRC" "$DST"
-echo "tidier instalado en $DST"
-echo "En una sesión abierta aparece a partir del próximo mensaje; si no, reiniciá la sesión."
+echo "tidier installed at $DST"
+echo "In an open session it shows up from the next message on; otherwise restart the session."
