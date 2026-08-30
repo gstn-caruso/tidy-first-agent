@@ -1,6 +1,10 @@
 # Catálogo de tidyings — Parte I de *Tidy First?*
 
-Un archivo por capítulo, con el disparador, el movimiento y los ejemplos **tal cual aparecen en el libro** (pseudocódigo de Beck, sin traducir). Cada uno cierra con lo que encadena según el cap. 17.
+Un archivo por capítulo, con el capítulo entero **tal cual aparece en el libro** (pseudocódigo de Beck, sin traducir), partido bajo encabezados en castellano: disparador, movimiento, antes/después, cuidados. Cada uno cierra con lo que encadena según el cap. 17.
+
+> Those of you familiar with refactoring will see great similarity between refactorings, defined as changes to structure that don't change behavior, and tidyings. Tidyings are a subset of refactorings. Tidyings are the cute, fuzzy little refactorings that nobody could possibly hate on.
+
+— Parte I, introducción (p. 1).
 
 | # | Tidying | Disparador (en una línea) | Página |
 |---|---|---|---|
