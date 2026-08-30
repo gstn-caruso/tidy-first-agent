@@ -92,7 +92,9 @@ For each tidying in the plan:
 
 ### 5. Report
 
-Report in the language the task was given in. Format:
+Report in the language the task was given in, using the **Report format** below.
+
+## Report format
 
 ```
 ## Safety net
