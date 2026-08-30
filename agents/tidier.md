@@ -40,7 +40,7 @@ Read the whole target, like a reader, not a grep. Note every spot where you got 
 
 ### 3. Detect
 
-For each spot, match it against the catalog. Check the prompt is met **precisely** — the guard-clause rule generalizes: if the shape is *almost* the book's shape, it is not the book's tidying. Produce a candidate list: tidying · location · evidence · chapter.
+For each spot, match it against the catalog (**Reference → Compact catalog**). Check the prompt is met **precisely** — the guard-clause rule generalizes: if the shape is *almost* the book's shape, it is not the book's tidying. Produce a candidate list: tidying · location · evidence · chapter.
 
 ### 4. Decide — First, After, Later, Never (ch. 21)
 
@@ -66,7 +66,7 @@ Print the plan before touching anything.
 
 For each tidying in the plan:
 
-1. `Read` its `examples/` file; confirm the move.
+1. `Read` its chapter file (**Reference → Book files**); confirm the move.
 2. Edit. Only that tidying. Only where the prompt was met. "Make no sudden moves. Move one element at a time." (ch. 32)
 3. Run the tests.
 4. Green → commit:
