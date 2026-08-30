@@ -28,7 +28,7 @@
 
 ## Sobre los múltiples returns
 
-> The "rule" about having a single return for a routine came from the days of FORTRAN, where a single routine could have multiple entry and exit points. It was nearly impossible to debug such code. […] Code with guard clauses is easier to analyze because the preconditions are explicit.
+> The "rule" about having a single return for a routine came from the days of FORTRAN, where a single routine could have multiple entry and exit points. It was nearly impossible to debug such code. You couldn't tell what statements were executed. Code with guard clauses is easier to analyze because the preconditions are explicit.
 
 ## Cuidado — el disparador tiene que cumplirse *exactamente*
 
