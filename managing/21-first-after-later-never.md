@@ -1,6 +1,6 @@
 # 21. First, After, Later, Never
 
-*Tidy First?*, cap. 21, pp. 51–54. **La respuesta del libro a su propio título.**
+*Tidy First?*, ch. 21, pp. 51–54. **The book's answer to its own title.**
 
 > Let's talk about the timing of tidying with respect to a behavior change in the system. Tidy first, then change the behavior? Change the behavior, then tidy? Or simply note messiness (in the sense that future behavior changes are going to be harder than they need to be), then come back later to tidy? Or, don't tidy at all?
 
@@ -60,7 +60,7 @@
 >
 > In general, bias toward tidying first, but be wary of tidying becoming an end in itself. The tidyings I've cataloged are tiny precisely so you don't have to think too hard about applying them. If you tidy and it doesn't pay off, no big deal. Bias toward tidying shouldn't cost you much, and most of the time it will pay off.
 
-## Resumen (verbatim, p. 54)
+## Summary (verbatim, p. 54)
 
 > **Tidy never when:**
 > - You're never changing this code again.
