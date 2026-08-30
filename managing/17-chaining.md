@@ -1,8 +1,8 @@
 # 17. Chaining
 
-*Tidy First?*, cap. 17, pp. 39–41.
+*Tidy First?*, ch. 17, pp. 39–41.
 
-## Por qué encadenar tidyings
+## Why chain tidyings
 
 > Tidyings are like potato chips. You eat one, and you'll want another. Managing the urge to keep tidying is a key tidying skill. You just tidied; should you tidy more? It depends (we'll get to what it depends on in Part III).
 >
@@ -10,9 +10,9 @@
 >
 > Tidying becomes a game of chess, with moves visible ahead. Let's look at how tidyings set up further tidyings:
 
-## Tabla de encadenamientos (verbatim)
+## Chaining table (verbatim)
 
-| Tidying | Texto completo (verbatim) |
+| Tidying | Full text (verbatim) |
 |---|---|
 | **Guard clause** | Once you've set up a guard clause, the condition may benefit from being turned into an explaining helper or extracted into an explaining variable. |
 | **Dead code** | Once you've removed the clutter of dead code, you may be able to see how to sort the code into reading order or cohesion order. |
@@ -29,12 +29,12 @@
 | **Explaining comments** | Move the information in the comment into the code if possible, by introducing an explaining variable, explaining constant, or explaining helper. |
 | **Delete redundant comments** | Eliminating the noise of redundant comments can help you see a better reading order or see the chance for explicit parameters. |
 
-## Sobre comentarios, para que quede claro
+## On comments, to be clear
 
 > I'm going to emphasize once again, since I get accused of being anti-comment, that you should only delete absolutely, completely redundant comments. You should also tidy with an eye toward making comments absolutely, completely redundant. Your job as a software designer is to set yourself and your team up for success, now and in the future.
 >
 > Since change is the dominant cost of software development and understanding code is the dominant cost of change, communicating the structure and intent of working code is one of the most valuable skills you can exercise. Comments are *a* form of communication, but tidying lets you explore the limits of communicating through the other elements of programming.
 
-## Conclusión del capítulo
+## Chapter conclusion
 
 > You will begin to flow tidyings together to achieve larger changes to the structure of your code. Be wary of changing too much, too fast. A failed tidying is expensive relative to the cost of a series of successful tidyings. Practice tidyings like the notes of a scale. When the notes are clean and relaxed, you can form them into melodies.
