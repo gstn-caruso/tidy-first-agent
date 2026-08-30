@@ -64,7 +64,7 @@
 
 ## For the tidier
 
-- From "First term": since the cost of software is ~ the cost of change, any tidying that makes future changes cheaper pays for itself, even if it changes nothing about behavior today.
+- From "First term: cost(software) ~= cost(change)": since the cost of software is ~ the cost of change, any tidying that makes future changes cheaper pays for itself, even if it changes nothing about behavior today.
 - From "Not all changes cost the same, and the power law": don't spread tidying effort evenly across all changes — look for where the next "outlier" change might be hiding and tidy there first.
-- From "From big changes to coupling": since cost(big changes) ~= coupling, measure a tidying's value by how much coupling it removes, not by how many lines it touches.
+- From "From big changes to coupling: the full equation": since cost(big changes) ~= coupling, measure a tidying's value by how much coupling it removes, not by how many lines it touches.
 - From "Conclusion: reduce coupling": if a candidate tidying doesn't reduce coupling in the area you're about to change, question whether it's worth the time before investing in it.

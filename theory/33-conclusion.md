@@ -62,7 +62,7 @@
 
 ## For the tidier
 
-- From "The four forces": to answer "tidy first?" in a concrete case, run it through the book's four questions — does it lower costs, raise revenue, lower coupling, concentrate cohesion? — and decide from that, not by eye.
+- From "The four forces: cost, revenue, coupling, cohesion": to answer "tidy first?" in a concrete case, run it through the book's four questions — does it lower costs, raise revenue, lower coupling, concentrate cohesion? — and decide from that, not by eye.
 - From "Most important: you": if a tidying doesn't move any of the four forces but gives you the peace of mind to keep programming well, it still counts — don't discard it just because it isn't measured in cost or coupling.
 - From "Don't get carried away: tidyings are the Pringles": in a tidy-first, tidy just enough to enable the next behavior change and stop there — save the temptation to keep going ("one more") for a tidy-later session, not for now.
 - From "Designing for others like you": whoever touches this code next inherits the coupling and cohesion you left behind, so the criterion of "is it worth tidying?" includes that person, not just you.
