@@ -1,70 +1,70 @@
 # tidy-first-agent
 
-Un agente de Claude Code que hace de **tidier** según *Tidy First? A Personal Exercise in Empirical Software Design* (Kent Beck, O'Reilly 2023), con los ejemplos del libro extraídos **verbatim** como material de consulta.
+A Claude Code agent that acts as a **tidier** per *Tidy First? A Personal Exercise in Empirical Software Design* (Kent Beck, O'Reilly 2023), with the book's examples extracted **verbatim** as reference material.
 
-Dado un archivo/diff/función —idealmente junto con el cambio de comportamiento que viene después— el agente:
+Given a file/diff/function — ideally along with the behavior change that comes next — the agent:
 
-1. arma la red de seguridad (tests en verde, working tree limpio),
-2. lee como lector y detecta qué tidyings del catálogo aplican, exigiendo que el disparador se cumpla *exactamente*,
-3. decide **First / After / Later / Never** (cap. 21) y arma un plan chico (cap. 18, 19),
-4. aplica **un tidying por commit**, corriendo los tests después de cada uno y revirtiendo si algo se pone rojo,
-5. reporta qué aplicó, qué revirtió y qué quedó en la *Fun List*, citando capítulo y página.
+1. builds the safety net (tests green, working tree clean),
+2. reads as a reader and detects which tidyings from the catalog apply, requiring that the trigger match *exactly*,
+3. decides **First / After / Later / Never** (ch. 21) and builds a small plan (ch. 18, 19),
+4. applies **one tidying per commit**, running the tests after each one and reverting if anything goes red,
+5. reports what it applied, what it reverted, and what's left on the *Fun List*, citing chapter and page.
 
-Nunca cambia comportamiento. Nunca mezcla.
+Never changes behavior. Never mixes.
 
 ## Layout
 
 ```
-agents/tidier.md        el agente (frontmatter + prompt); lo que se instala en ~/.claude/agents/
-examples/               Parte I — los 15 tidyings, un capítulo entero por archivo, tal cual el libro
-examples/README.md      índice del catálogo
-managing/               Parte II — Separate Tidying, Chaining, Batch Sizes, Rhythm, Getting Untangled, First/After/Later/Never
-managing/README.md      índice
-theory/                 Parte III — diseño, estructura vs. comportamiento, economía, reversibilidad, acoplamiento, cohesión, Conclusion
-theory/README.md        índice; cada capítulo cierra con un bloque "Para el tidier" (la regla de decisión que se lleva el agente)
-install.sh              copia el agente a ~/.claude/agents/tidier.md
-assets/                 el libro (pdf/epub) — ignorado por git, no se pushea; es la fuente de la que se extrajo todo lo demás
+agents/tidier.md        the agent (frontmatter + prompt); what gets installed to ~/.claude/agents/
+examples/               Part I — the 15 tidyings, one full chapter per file, verbatim from the book
+examples/README.md      catalog index
+managing/               Part II — Separate Tidying, Chaining, Batch Sizes, Rhythm, Getting Untangled, First/After/Later/Never
+managing/README.md      index
+theory/                 Part III — design, structure vs. behavior, economics, reversibility, coupling, cohesion, Conclusion
+theory/README.md        index; each chapter closes with a "For the tidier" block (the decision rule the agent takes from it)
+install.sh              copies the agent to ~/.claude/agents/tidier.md
+assets/                 the book (pdf/epub) — gitignored, not pushed; the source everything else was extracted from
 ```
 
-El agente está escrito **en inglés** (frontmatter y prompt; el reporte sale en el idioma del pedido) y se lee de arriba abajo: rol → *Contract* (siete reglas innegociables) → *Inputs* → *Workflow* (safety net, read, detect, decide, apply, report) → *Report format* → *Reference* (dónde está el libro y cuándo leer qué, catálogo compacto de la Parte I, fuerzas de la Parte III).
+The agent reports in the language the task was given in, and reads top to bottom: role → *Contract* (seven non-negotiable rules) → *Inputs* → *Workflow* (safety net, read, detect, decide, apply, report) → *Report format* → *Reference* (where the book is and when to read what, a compact catalog of Part I, the forces of Part III).
 
-Los tres directorios contienen el libro **verbatim** (partes I a III, capítulos 1–33), partidos bajo encabezados en castellano. El agente lee `examples/NN-*.md` antes de aplicar cada tidying para verificar que el movimiento coincide con el del libro, `managing/21` y `theory/27` cuando la decisión first/after/later/never no es obvia, y `theory/29` y `theory/32` cuando el desorden es acoplamiento. Si las carpetas no están, trabaja con el catálogo y la tabla de fuerzas embebidos en el prompt y lo avisa.
+The three directories hold the book **verbatim** (Parts I–III, chapters 1–33), split under **English** headings. The agent reads `examples/NN-*.md` before applying each tidying to verify the move matches the book's, `managing/21` and `theory/27` when the first/after/later/never decision isn't obvious, and `theory/29` and `theory/32` when the mess is coupling. If the directories aren't present, it works from the catalog and forces table embedded in the prompt, and says so.
 
-## Instalar
+## Install
 
 ```sh
 ./install.sh
 ```
 
-Copia `agents/tidier.md` a `~/.claude/agents/tidier.md`. Claude Code relee `~/.claude/agents/` entre turnos: en una sesión abierta, `tidier` aparece en la lista de agentes a partir del próximo mensaje (si no, reiniciá la sesión).
+Copies `agents/tidier.md` to `~/.claude/agents/tidier.md`. Claude Code re-reads `~/.claude/agents/` between turns: in an open session, `tidier` shows up in the agent list from the next message on (otherwise, restart the session).
 
-## Usar
+## Use
 
-Desde una sesión de Claude Code, en un repo con tests:
+From a Claude Code session, in a repo with tests:
 
-> Usá el agente `tidier` sobre `src/orders.py`. El cambio de comportamiento que viene es: soportar descuentos por volumen en `price_for()`.
+> Use the `tidier` agent on `src/orders.py`. The behavior change that comes next: support volume discounts in `price_for()`.
 
-O sin cambio de comportamiento a la vista (modo "leer para entender", más conservador):
+Or with no behavior change in sight ("read to understand" mode, more conservative):
 
-> Hacé un pase de Tidy First con `tidier` sobre `lib/parser.js`.
+> Do a Tidy First pass with `tidier` on `lib/parser.js`.
 
-O después de un cambio que ya entró y dejó a la vista el desorden (modo *after*, cap. 21):
+Or after a change that already landed and exposed the mess (*after* mode, ch. 21):
 
-> Acabo de mergear el descuento por volumen en `price_for()`. Tidy after con `tidier`.
+> I just merged the volume discount into `price_for()`. Tidy after with `tidier`.
 
-Qué le podés pasar: el target, el próximo cambio de comportamiento (o el que acaba de entrar), el comando de tests (si no, lo detecta) y trailers para los commits.
+What you can hand it: the target, the next behavior change (or the one that just landed), the test command (if not, it detects one), and trailers for the commits.
 
-## Qué NO hace
+## What it does NOT do
 
-- Cambios de comportamiento, ni un bugfix "ya que estoy".
-- Refactors grandes: extraer un objeto/servicio, nuevas abstracciones — el libro los deja explícitamente fuera del alcance de un tidying (cap. 17) y, en el caso de los servicios, los marca como difíciles de deshacer (cap. 28).
-- Seguir ordenando más allá de lo que sirve al próximo cambio de comportamiento: "Save the tidying binge for later" (cap. 33).
-- Trabajar sobre una imagen viva de Cuis: ahí el estado compartido es la imagen, no el working tree; usar `cuis-tcr-tdd-driver`.
+- Behavior changes, not even a "while I'm at it" bugfix.
+- Big refactors: extracting an object/service, new abstractions — the book explicitly puts these out of scope for a tidying (ch. 17), and, for services, marks them as hard to undo (ch. 28).
+- Continuing to tidy past what serves the next behavior change: "Save the tidying binge for later" (ch. 33).
+- Working on a live Cuis image: there, the shared state is the image, not the working tree; use `cuis-tcr-tdd-driver`.
 
-## Relación con el skill `tidy-first`
+## Relationship with the skill `tidy-first`
 
-El skill `~/.claude/skills/tidy-first/` es la guía **inline** (teoría, cuándo cargarla, traducciones a Java). Este agente es el **worker**: arranca en frío, aplica y commitea. Son independientes; el agente trae sus propios ejemplos.
+The skill `~/.claude/skills/tidy-first/` is the **inline** guide (theory, when to load it, Java translations). This agent is the **worker**: starts cold, applies, and commits. They're independent; the agent brings its own examples.
 
-## Fuente
+## Source
 
-Kent Beck, *Tidy First? A Personal Exercise in Empirical Software Design*, O'Reilly Media, 2023. ISBN 978-1-098-15124-9. Las citas son del libro; los ejemplos están en el pseudocódigo original de Beck.
+Kent Beck, *Tidy First? A Personal Exercise in Empirical Software Design*, O'Reilly Media, 2023. ISBN 978-1-098-15124-9. Quotes are from the book; the examples are in Beck's original pseudocode.
