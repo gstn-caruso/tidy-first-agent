@@ -18,7 +18,7 @@
 
 ## "¿Y si lo necesitamos después?"
 
-> That's what version control is for. We aren't really deleting anything. We just don't have to look at it right now. If (and this is a long string of conditionals) we 1) have a lot of code that 2) isn't used right now that 3) we want to use in the future 4) in exactly the same way it was originally written and 5) it still works, then yes, we can get it back. Or we can just write it again, and better.
+> That's what version control is for. We aren't really deleting anything. We just don't have to look at it right now. If (and this is a long string of conditionals) we 1) have a lot of code that 2) isn't used right now that 3) we want to use in the future 4) in exactly the same way it was originally written and 5) it still works, then yes, we can get it back. Or we can just write it again, and better. But if worse comes to worst, we can always get it back.
 
 ## Tamaño del paso
 
