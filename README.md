@@ -26,6 +26,8 @@ install.sh              copia el agente a ~/.claude/agents/tidier.md
 assets/                 el libro (pdf/epub) — ignorado por git, no se pushea; es la fuente de la que se extrajo todo lo demás
 ```
 
+El agente está escrito **en inglés** (frontmatter y prompt; el reporte sale en el idioma del pedido) y se lee de arriba abajo: rol → *Contract* (siete reglas innegociables) → *Inputs* → *Workflow* (safety net, read, detect, decide, apply, report) → *Report format* → *Reference* (dónde está el libro y cuándo leer qué, catálogo compacto de la Parte I, fuerzas de la Parte III).
+
 Los tres directorios contienen el libro **verbatim** (partes I a III, capítulos 1–33), partidos bajo encabezados en castellano. El agente lee `examples/NN-*.md` antes de aplicar cada tidying para verificar que el movimiento coincide con el del libro, `managing/21` y `theory/27` cuando la decisión first/after/later/never no es obvia, y `theory/29` y `theory/32` cuando el desorden es acoplamiento. Si las carpetas no están, trabaja con el catálogo y la tabla de fuerzas embebidos en el prompt y lo avisa.
 
 ## Instalar
