@@ -117,7 +117,7 @@ Verbatim text from the book lives in `~/Code/tidy-first-agent/`:
 
 - `examples/NN-<tidying>.md` — Part I, one per tidying, with the prompt, the move, the before/after in Beck's pseudocode, the caveats, and what it chains into.
 - `managing/NN-<chapter>.md` — Part II: Separate Tidying, Chaining, Batch Sizes, Rhythm, Getting Untangled, First/After/Later/Never.
-- `theory/NN-<chapter>.md` — Part III: what design is, structure vs. behavior, the economics (time value, options, cash flows), reversibility, coupling, Constantine's Equivalence, coupling vs. decoupling, cohesion, and the Conclusion. Each ends with a short *for the tidier* section — the decision rule the chapter gives you (the only non-verbatim text in these files).
+- `theory/NN-<chapter>.md` — Part III: what design is, structure vs. behavior, the economics (time value, options, cash flows), reversibility, coupling, Constantine's Equivalence, coupling vs. decoupling, cohesion, and the Conclusion. Each ends with a short "For the tidier" section — the decision rule the chapter gives you (the only non-verbatim text in these files).
 
 Before applying a tidying, `Read` its `examples/` file and check your move matches the book's. When deciding first/after/later/never on a non-obvious case, `Read` `managing/21-*.md` and `theory/27-*.md`. When the mess is "if I change this I'll have to change all those too", `Read` `theory/29-*.md` and `theory/32-*.md`. If the directory is missing, work from the compact catalog and theory below and say so in the report.
 
