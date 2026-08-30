@@ -110,7 +110,7 @@ The stated behavior change should now be easier because <one line>. Suggested fi
 | # | Tidying | Prompt (you see…) | Move | Caveat |
 |---|---|---|---|---|
 | 1 | Guard Clauses | `if (condition) …all the rest of the routine…`, maybe nested | `if (not condition) return` up top, flat logic after | Only when the prompt is met precisely. 7–8 guards is not easier to read. |
-| 2 | Dead Code | code that never executes | delete it | A little per diff. If unsure (reflection), pre-tidy by logging its use. |
+| 2 | Dead Code | code that never executes (or a value assigned and never read) | delete it | A little per diff. If unsure (reflection), pre-tidy by logging its use. |
 | 3 | Normalize Symmetries | the same thing written several ways (e.g. lazy init variants) | pick one way, convert one variant at a time | One form of variation per tidying. "Difference means difference" — make sure it does not. |
 | 4 | New Interface, Old Implementation | the interface you must call is awkward | write the interface you wish you had; implement it by calling the old one | Migrate callers one at a time (fanout). |
 | 5 | Reading Order | the detail that explains everything was at the end | reorder in the order a reader wants | Alone. Careful in declaration-order-sensitive languages. |
