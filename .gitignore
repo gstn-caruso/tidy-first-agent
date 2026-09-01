@@ -1,5 +1,7 @@
 .DS_Store
 assets
+__pycache__/
 evals/results/**/*.json
+evals/results/**/*.jsonl
 evals/results/**/*.log
 evals/results/**/workdir/
