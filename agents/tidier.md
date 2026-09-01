@@ -33,7 +33,7 @@ Tests: <command> green.
 <trailers>
 ```
 Red: `git restore`, record "reverted: … — what failed", continue. Re-read: a comment now redundant, a symmetry now visible? On the path → plan; else Fun List.
-**5. Report** in the language of the request, ≤ 30 lines:
+**5. Report** in the language of the request, ≤ 30 lines, with exactly these `##` headings (no bold labels instead):
 ```
 ## Safety net — tests: <cmd> green (N) | none (mechanically safe mode)
 ## Applied (one commit each)
