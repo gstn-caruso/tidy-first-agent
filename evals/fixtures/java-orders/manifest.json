@@ -1,0 +1,100 @@
+{
+  "language": "java",
+  "test_command": "mvn -q test",
+  "test_paths": ["src/test/"],
+  "hidden_tests": {"from": "evals/hidden-tests/java-orders", "to": "src/test/java/orders"},
+  "messes": [
+    {
+      "id": "guard",
+      "tidying": "Guard Clauses",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "anchor": "if \\(order\\.hasItems\\(\\)\\) \\{"
+    },
+    {
+      "id": "constant",
+      "tidying": "Explaining Constants",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "anchor": "double vat = subtotal \\* 0\\.21;"
+    },
+    {
+      "id": "redundant-comment",
+      "tidying": "Delete Redundant Comments",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "anchor": "// add the shipping cost to the total"
+    },
+    {
+      "id": "dead-code",
+      "tidying": "Dead Code",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "anchor": "private double legacyRoundingAdjustment\\(double amount\\) \\{"
+    },
+    {
+      "id": "explaining-variable",
+      "tidying": "Explaining Variables",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "anchor": "if \\(subtotal >= FREE_SHIPPING_THRESHOLD && order\\.channel\\(\\) != Channel\\.PHONE && order\\.items\\(\\)\\.size\\(\\) >= 2 && !order\\.customer\\(\\)\\.guest\\(\\)\\) \\{"
+    },
+    {
+      "id": "symmetry",
+      "tidying": "Normalize Symmetries",
+      "file": "src/main/java/orders/OrderParser.java",
+      "anchor": "return dateFormatter != null \\? dateFormatter : \\(dateFormatter = DateTimeFormatter\\.ISO_LOCAL_DATE\\);"
+    },
+    {
+      "id": "declaration",
+      "tidying": "Move Declaration and Initialization Together",
+      "file": "src/main/java/orders/OrderParser.java",
+      "anchor": "        int totalQuantity;"
+    },
+    {
+      "id": "chunk",
+      "tidying": "Chunk Statements",
+      "file": "src/main/java/orders/OrderParser.java",
+      "anchor": "private Order buildOrder\\(Map<String, String> fields, List<LineItem> items\\) \\{"
+    },
+    {
+      "id": "explicit-params",
+      "tidying": "Explicit Parameters",
+      "file": "src/main/java/orders/OrderParser.java",
+      "anchor": "String customerId = fields\\.get\\(\"customerId\"\\);"
+    },
+    {
+      "id": "extract-helper",
+      "tidying": "Extract Helper",
+      "file": "src/main/java/orders/OrderParser.java",
+      "anchor": "sku = sku\\.replace\\(' ', '-'\\);"
+    }
+  ],
+  "decoys": [
+    {
+      "id": "decoy-guard",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "must_still_match": "if \\(order\\.channel\\(\\) == Channel\\.PARTNER_API \\|\\| order\\.channel\\(\\) == Channel\\.PARTNER_PORTAL\\) \\{\\n\\s*subtotal -= subtotal \\* PARTNER_DISCOUNT;\\n\\s*\\}\\n\\s*subtotal = Math\\.round\\(subtotal \\* 100\\.0\\) / 100\\.0;",
+      "reason": "ch. 1 caveat: code after the if runs unconditionally (the rounding line applies to both branches), so the prompt 'if wraps all the rest of the routine' is not met precisely — must not become a guard clause."
+    },
+    {
+      "id": "decoy-reflection",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "must_still_match": "private String auditLabel\\(Order order\\) \\{",
+      "reason": "ch. 2 caveat: looks unused by production code, but OrderPricerTest invokes it via getDeclaredMethod(...).invoke(...) — deleting it as dead code would break that test."
+    },
+    {
+      "id": "decoy-enum-mapper",
+      "file": "src/main/java/orders/OrderPricer.java",
+      "must_still_match": "case PARTNER_API: return ChannelCode\\.PARTNER;\\n\\s*case PARTNER_PORTAL: return ChannelCode\\.PARTNER;",
+      "reason": "ch. 3 caveat 'difference means difference': the two case lines return the same ChannelCode, but the comment notes the partner distinction is carried by another field — collapsing them would erase the per-channel mapping the test asserts."
+    },
+    {
+      "id": "decoy-shared-locals",
+      "file": "src/main/java/orders/OrderParser.java",
+      "must_still_match": "if \\(channel == Channel\\.PARTNER_API \\|\\| channel == Channel\\.PARTNER_PORTAL\\) \\{\\n\\s*totalQuantity = totalQuantity - 1;\\n\\s*currency = currency\\.toUpperCase\\(\\);\\n\\s*customerId = customerId \\+ \"-PARTNER\";\\n\\s*orderId = orderId \\+ \"-P\";\\n\\s*\\}",
+      "reason": "ch. 12 caveat: the block reads and writes four locals of the enclosing method (totalQuantity, currency, customerId, orderId) — 'limited interaction' is not met, so it is not a valid Extract Helper target."
+    },
+    {
+      "id": "decoy-intentional-difference",
+      "file": "src/main/java/orders/OrderParser.java",
+      "must_still_match": "if \\(channel == Channel\\.STORE\\) \\{\\n\\s*// store receipts already trim whitespace at the register; trimming again would hide a cashier data-entry bug\\n\\s*return raw;\\n\\s*\\}\\n\\s*return raw\\.trim\\(\\);",
+      "reason": "ch. 3 caveat 'difference means difference': the STORE branch intentionally skips trim(), and the comment says so — normalizing the two branches to one form would change behavior."
+    }
+  ]
+}
