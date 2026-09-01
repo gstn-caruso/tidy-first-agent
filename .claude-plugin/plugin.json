@@ -1,0 +1,8 @@
+{
+  "name": "tidy-first",
+  "version": "0.1.0",
+  "description": "Kent Beck's Tidy First? as a Claude Code plugin: a tidier agent that applies the 15 tidyings one commit at a time, plus an inline tidy-first skill with the book's decision rules.",
+  "author": { "name": "Gastón Caruso" },
+  "repository": "https://github.com/gstn-caruso/tidy-first-agent",
+  "keywords": ["tidy-first", "kent-beck", "refactoring", "tidyings", "structure-vs-behavior"]
+}
