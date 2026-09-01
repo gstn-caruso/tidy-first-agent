@@ -36,10 +36,6 @@
 > ```
 > You're reading. You understand. You're putting that understanding into the code so you don't have to hold it in your head.
 
-## What comes next
-
-> There are a few tidyings downstream of this one about putting constants that change together or need to be understood together in one place and separating them from constants that cluster for other reasons. I'm going to let you figure those out. Coupling, cohesion, just do your thing.
-
 ## Chains into (ch. 17)
 
 > Extracting an explaining constant leads to cohesion order. Grouping constants that change in sync eases future changes.
