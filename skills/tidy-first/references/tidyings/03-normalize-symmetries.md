@@ -2,10 +2,6 @@
 
 *Tidy First?*, ch. 3, pp. 7–8.
 
-## Organic growth
-
-> Code grows organically. Some folks use "organic" as a pejorative. That makes no sense to me. We can't possibly write all the code we'll ever need all at once. That would only work if we never learned anything.
-
 ## Prompt
 
 > In growing organically, the same problem may be solved differently at different times or by different people. That's okay, but it makes for difficult reading. As a reader, you'd like consistency. If you see a pattern, you can confidently jump to the conclusion that you know what's going on.
