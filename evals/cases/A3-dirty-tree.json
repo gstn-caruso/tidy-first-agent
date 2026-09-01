@@ -9,7 +9,7 @@
       "text": "\n// wip\n"
     }
   ],
-  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `priceFor()`. Tests: `mvn -q test`.",
+  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `totalPrice()`. Tests: `mvn -q test`.",
   "max_turns": 15,
   "expect": {
     "min_commits": 0,

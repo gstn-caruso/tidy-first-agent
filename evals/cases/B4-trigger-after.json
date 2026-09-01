@@ -3,7 +3,7 @@
   "family": "B",
   "fixture": "java-orders",
   "prepare": [],
-  "prompt": "I just merged a change to OrderPricer.priceFor(). Tidy after.",
+  "prompt": "I just merged a change to OrderPricer.totalPrice(). Tidy after.",
   "max_turns": 2,
   "expect": {
     "first_tool": {

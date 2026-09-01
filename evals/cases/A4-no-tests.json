@@ -12,7 +12,7 @@
       "message": "chore: drop tests"
     }
   ],
-  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `priceFor()`. Tests: none — detect what you can.",
+  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `totalPrice()`. Tests: none — detect what you can.",
   "max_turns": 30,
   "expect": {
     "forbidden_tidyings": [

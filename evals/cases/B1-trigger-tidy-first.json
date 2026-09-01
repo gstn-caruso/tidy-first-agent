@@ -3,7 +3,7 @@
   "family": "B",
   "fixture": "java-orders",
   "prepare": [],
-  "prompt": "Tidy first OrderPricer before I add volume discounts to priceFor()",
+  "prompt": "Tidy first OrderPricer before I add volume discounts to totalPrice()",
   "max_turns": 2,
   "expect": {
     "first_tool": {
