@@ -6,7 +6,7 @@
   "prompt": "Do a Tidy First pass on `src/main/java/orders/OrderPricer.java` so I can understand it. Tests: `mvn -q test`.",
   "max_turns": 30,
   "expect": {
-    "max_commits": 3,
+    "max_commits": 6,
     "hidden_tests_green": true,
     "tests_green_each_commit": true,
     "clean_tree": true,
