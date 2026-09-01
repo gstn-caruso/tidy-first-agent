@@ -6,7 +6,7 @@
     {
       "op": "append",
       "file": "src/test/java/orders/OrderPricerTest.java",
-      "text": "\n\nclass OrderPricerReportingTest {\n    @org.junit.Test\n    public void reportingHookIsAvailable() {\n        // A trivial, self-contained assertion: this prepare step must stay\n        // compilable without assuming OrderPricer's exact API.\n        org.junit.Assert.assertTrue(true);\n    }\n}\n"
+      "text": "\n\nclass OrderPricerReportingTest {\n    @org.junit.jupiter.api.Test\n    void reportingHookIsAvailable() {\n        Order empty = new Order(\"R-1\", new Customer(\"c-1\", \"Jane Doe\", false), Channel.WEB, java.util.List.of(), \"USD\");\n        org.junit.jupiter.api.Assertions.assertEquals(0.0, new OrderPricer().subtotal(empty));\n    }\n}\n"
     },
     {
       "op": "commit",
