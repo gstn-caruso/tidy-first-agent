@@ -503,12 +503,21 @@ def check_first_tool(run_record, case):
     if not tool_uses:
         return {"passed": False, "evidence": "no tool_use in run"}
     first = tool_uses[0]
-    name_ok = first.get("name") == expected.get("name")
+    name_ok = _tool_name_matches(first.get("name"), expected.get("name"))
     contains = expected.get("input_contains", "")
     input_str = json.dumps(first.get("input", {}), ensure_ascii=False)
     contains_ok = (not contains) or (contains.lower() in input_str.lower())
     passed = name_ok and contains_ok
     return {"passed": passed, "evidence": f"first tool_use: {first.get('name')} input~{input_str[:200]}"}
+
+
+DELEGATION_TOOLS = {"Task", "Agent"}  # the subagent tool is named Agent in Claude Code >= 2.1
+
+
+def _tool_name_matches(actual, wanted):
+    if wanted in DELEGATION_TOOLS:
+        return actual in DELEGATION_TOOLS
+    return actual == wanted
 
 
 def check_delegates_to(run_record, case):
@@ -524,7 +533,7 @@ def check_delegates_to(run_record, case):
 
     match_input = None
     for t in tool_uses:
-        if t.get("name") == wanted_name:
+        if _tool_name_matches(t.get("name"), wanted_name):
             input_str = json.dumps(t.get("input", {}), ensure_ascii=False)
             if not contains or contains in input_str.lower():
                 match_input = input_str
@@ -542,7 +551,7 @@ def check_delegates_to(run_record, case):
 def check_must_not_delegate(run_record):
     offenders = []
     for t in run_record.get("tool_uses", []):
-        if t.get("name") == "Task":
+        if t.get("name") in DELEGATION_TOOLS:
             input_str = json.dumps(t.get("input", {}), ensure_ascii=False).lower()
             if "tidier" in input_str:
                 offenders.append(input_str[:200])
