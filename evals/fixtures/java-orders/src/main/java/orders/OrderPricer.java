@@ -11,7 +11,7 @@ public class OrderPricer {
             double vat = subtotal * 0.21;
             double total = subtotal + vat;
             double shipping;
-            if (subtotal >= FREE_SHIPPING_THRESHOLD && order.channel() != Channel.PHONE && order.items().size() >= 2 && !order.customer().guest()) {
+            if (shouldHaveFreeShipping(order, subtotal)) {
                 shipping = 0;
             } else {
                 shipping = shippingCost(subtotal);
@@ -57,6 +57,10 @@ public class OrderPricer {
             return 4.99;
         }
         return 9.99;
+    }
+
+    private boolean shouldHaveFreeShipping(Order order, double subtotal) {
+        return subtotal >= FREE_SHIPPING_THRESHOLD && order.channel() != Channel.PHONE && order.items().size() >= 2 && !order.customer().guest();
     }
 
     private double legacyRoundingAdjustment(double amount) {
