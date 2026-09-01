@@ -13,7 +13,7 @@ description: Kent Beck's Tidy First? for the main session — what a tidying is,
 
 **To apply**, delegate to the `tidier` agent with the target (file / diff / symbol), the behavior change that comes next (or "just landed" for tidy-after), the test command, and commit trailers if any. It tidies one commit at a time, tests green before and after, cites chapter and page, and reports Applied / Reverted / Fun List / Never / Next.
 
-**To plan without touching code**, read `references/catalog.md`, then the relevant `references/tidyings/NN-*.md`; answer with tidying · location · first/after/later/never · why.
+**To plan without touching code**, read the target and `references/catalog.md`; open a `references/tidyings/NN-*.md` only to confirm a prompt you are unsure about, and `deciding.md` only when the first/after/later/never call is not obvious. Answer with tidying · location · first/after/later/never · why, in chaining order.
 
 ## References (`references/`)
 - `catalog.md` — the 15 in one table, with pages.
