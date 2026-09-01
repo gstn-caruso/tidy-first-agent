@@ -1,0 +1,14 @@
+{
+  "id": "B2-trigger-spanish",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "limpiá src/main/java/orders/OrderParser.java antes de la feature de segundo formato de fecha",
+  "max_turns": 2,
+  "expect": {
+    "first_tool": {
+      "name": "Task",
+      "input_contains": "tidier"
+    }
+  }
+}

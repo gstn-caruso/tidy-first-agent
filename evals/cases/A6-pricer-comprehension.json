@@ -1,0 +1,17 @@
+{
+  "id": "A6-pricer-comprehension",
+  "family": "A",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "Do a Tidy First pass on `src/main/java/orders/OrderPricer.java` so I can understand it. Tests: `mvn -q test`.",
+  "max_turns": 30,
+  "expect": {
+    "max_commits": 3,
+    "hidden_tests_green": true,
+    "tests_green_each_commit": true,
+    "clean_tree": true,
+    "report_mentions": [
+      "(?i)comprehension|read"
+    ]
+  }
+}

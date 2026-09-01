@@ -1,0 +1,31 @@
+{
+  "id": "A1-pricer-first",
+  "family": "A",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `priceFor()`. Tests: `mvn -q test`.",
+  "max_turns": 40,
+  "expect": {
+    "min_commits": 3,
+    "max_commits": 8,
+    "required_tidyings": [
+      "Guard Clauses",
+      "Explaining Constants",
+      "Delete Redundant Comments"
+    ],
+    "decoys_intact": [
+      "decoy-guard",
+      "decoy-reflection",
+      "decoy-enum-mapper"
+    ],
+    "hidden_tests_green": true,
+    "tests_green_each_commit": true,
+    "clean_tree": true,
+    "report_sections": [
+      "## Applied",
+      "## Fun List"
+    ],
+    "max_report_lines": 45,
+    "one_mess_per_commit": true
+  }
+}

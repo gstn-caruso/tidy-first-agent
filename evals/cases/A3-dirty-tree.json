@@ -1,0 +1,22 @@
+{
+  "id": "A3-dirty-tree",
+  "family": "A",
+  "fixture": "java-orders",
+  "prepare": [
+    {
+      "op": "append",
+      "file": "src/main/java/orders/Customer.java",
+      "text": "\n// wip\n"
+    }
+  ],
+  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `priceFor()`. Tests: `mvn -q test`.",
+  "max_turns": 15,
+  "expect": {
+    "min_commits": 0,
+    "max_commits": 0,
+    "report_mentions": [
+      "(?i)working tree|uncommitted|git status"
+    ],
+    "tree_unchanged_since_prepare": true
+  }
+}

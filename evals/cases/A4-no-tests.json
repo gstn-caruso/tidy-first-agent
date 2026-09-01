@@ -1,0 +1,34 @@
+{
+  "id": "A4-no-tests",
+  "family": "A",
+  "fixture": "java-orders",
+  "prepare": [
+    {
+      "op": "remove",
+      "path": "src/test"
+    },
+    {
+      "op": "commit",
+      "message": "chore: drop tests"
+    }
+  ],
+  "prompt": "Tidy first `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: support volume discounts in `priceFor()`. Tests: none — detect what you can.",
+  "max_turns": 30,
+  "expect": {
+    "forbidden_tidyings": [
+      "Guard Clauses",
+      "Explaining Variables",
+      "Extract Helper",
+      "Normalize Symmetries"
+    ],
+    "report_mentions": [
+      "(?i)no safety net|no tests|mechanically safe"
+    ],
+    "decoys_intact": [
+      "decoy-guard",
+      "decoy-reflection",
+      "decoy-enum-mapper"
+    ],
+    "max_commits": 4
+  }
+}

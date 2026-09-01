@@ -1,0 +1,16 @@
+{
+  "id": "C2-skill-plan-parser",
+  "family": "C",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "Which tidyings from Tidy First? apply to src/main/java/orders/OrderParser.java, and in what order? Do not change anything.",
+  "max_turns": 6,
+  "expect": {
+    "skill_invoked": "tidy-first",
+    "no_edits": true,
+    "report_mentions": [
+      "Normalize Symmetries",
+      "Chunk Statements"
+    ]
+  }
+}

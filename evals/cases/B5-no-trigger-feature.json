@@ -1,0 +1,11 @@
+{
+  "id": "B5-no-trigger-feature",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "add volume discounts to priceFor() in OrderPricer.java: 5% off for 10+ units",
+  "max_turns": 2,
+  "expect": {
+    "must_not_delegate": true
+  }
+}

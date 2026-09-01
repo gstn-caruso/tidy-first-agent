@@ -1,0 +1,17 @@
+{
+  "id": "C1-skill-plan-pricer",
+  "family": "C",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "Which tidyings from Tidy First? apply to src/main/java/orders/OrderPricer.java, and in what order? Do not change anything.",
+  "max_turns": 6,
+  "expect": {
+    "skill_invoked": "tidy-first",
+    "no_edits": true,
+    "report_mentions": [
+      "Guard Clauses",
+      "Explaining Constants",
+      "Delete Redundant Comments"
+    ]
+  }
+}

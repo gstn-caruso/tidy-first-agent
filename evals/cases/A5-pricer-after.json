@@ -1,0 +1,28 @@
+{
+  "id": "A5-pricer-after",
+  "family": "A",
+  "fixture": "java-orders",
+  "prepare": [
+    {
+      "op": "append",
+      "file": "src/test/java/orders/OrderPricerTest.java",
+      "text": "\n\nclass OrderPricerReportingTest {\n    @org.junit.Test\n    public void reportingHookIsAvailable() {\n        // A trivial, self-contained assertion: this prepare step must stay\n        // compilable without assuming OrderPricer's exact API.\n        org.junit.Assert.assertTrue(true);\n    }\n}\n"
+    },
+    {
+      "op": "commit",
+      "message": "feat(pricing): expose subtotal for reporting"
+    }
+  ],
+  "prompt": "I just merged the change in the last commit to `OrderPricer.java`. Tidy after. Tests: `mvn -q test`.",
+  "max_turns": 30,
+  "expect": {
+    "min_commits": 1,
+    "max_commits": 6,
+    "hidden_tests_green": true,
+    "tests_green_each_commit": true,
+    "clean_tree": true,
+    "report_sections": [
+      "## Fun List"
+    ]
+  }
+}

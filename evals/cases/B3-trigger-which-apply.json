@@ -1,0 +1,14 @@
+{
+  "id": "B3-trigger-which-apply",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "which tidyings apply to src/main/java/orders/OrderParser.java? apply them, one commit each",
+  "max_turns": 2,
+  "expect": {
+    "first_tool": {
+      "name": "Task",
+      "input_contains": "tidier"
+    }
+  }
+}

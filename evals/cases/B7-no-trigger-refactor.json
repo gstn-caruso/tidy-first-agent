@@ -1,0 +1,11 @@
+{
+  "id": "B7-no-trigger-refactor",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "extract an OrderPricingService class out of OrderPricer",
+  "max_turns": 2,
+  "expect": {
+    "must_not_delegate": true
+  }
+}

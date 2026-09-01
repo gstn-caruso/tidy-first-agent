@@ -1,0 +1,14 @@
+{
+  "id": "B1-trigger-tidy-first",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "Tidy first OrderPricer before I add volume discounts to priceFor()",
+  "max_turns": 2,
+  "expect": {
+    "first_tool": {
+      "name": "Task",
+      "input_contains": "tidier"
+    }
+  }
+}

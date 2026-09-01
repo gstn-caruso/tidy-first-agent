@@ -1,0 +1,11 @@
+{
+  "id": "B6-no-trigger-fix",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "OrderPricerTest.freeShippingBoundary is failing, fix it",
+  "max_turns": 2,
+  "expect": {
+    "must_not_delegate": true
+  }
+}

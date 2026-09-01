@@ -1,0 +1,14 @@
+{
+  "id": "B4-trigger-after",
+  "family": "B",
+  "fixture": "java-orders",
+  "prepare": [],
+  "prompt": "I just merged a change to OrderPricer.priceFor(). Tidy after.",
+  "max_turns": 2,
+  "expect": {
+    "first_tool": {
+      "name": "Task",
+      "input_contains": "tidier"
+    }
+  }
+}
