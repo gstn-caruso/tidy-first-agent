@@ -219,15 +219,29 @@ def parse_stream(text: str) -> dict:
     return {"tool_uses": tool_uses, "assistant_texts": assistant_texts, "result_event": result_event}
 
 
+def _sum_or_none(*values):
+    """Sum ints/floats, or None if any input is missing (e.g. a crashed run)."""
+    if any(v is None for v in values):
+        return None
+    return sum(values)
+
+
 def build_metrics(result_event, wall_ms):
     result_event = result_event or {}
     usage = result_event.get("usage") or {}
+    input_tokens = usage.get("input_tokens")
+    cache_read = usage.get("cache_read_input_tokens")
+    cache_create = usage.get("cache_creation_input_tokens")
     return {
         "cost_usd": result_event.get("total_cost_usd"),
-        "input_tokens": usage.get("input_tokens"),
+        "input_tokens": input_tokens,
         "output_tokens": usage.get("output_tokens"),
-        "cache_read": usage.get("cache_read_input_tokens"),
-        "cache_create": usage.get("cache_creation_input_tokens"),
+        "cache_read": cache_read,
+        "cache_create": cache_create,
+        # Prompt caching means most "input" on a run is cache reads, not
+        # fresh input tokens — this is the number that reflects what the
+        # agent actually had in context: input + cache writes + cache reads.
+        "context_tokens": _sum_or_none(input_tokens, cache_create, cache_read),
         "num_turns": result_event.get("num_turns"),
         "duration_ms": result_event.get("duration_ms"),
         "wall_ms": wall_ms,
@@ -260,7 +274,7 @@ def run_one(case, model, n, args, out_dir: Path):
     if not fixture_dir.exists() or manifest is None:
         record = {
             "case": case["id"], "model": model, "run": n, "command": None,
-            "metrics": {}, "tool_use_counts": {}, "checks": {},
+            "metrics": {}, "tool_use_counts": {}, "tool_uses": [], "checks": {},
             "passed": False, "result_text": "",
             "crashed": f"fixture not found: {fixture_dir} (manifest missing)",
         }
@@ -277,7 +291,7 @@ def run_one(case, model, n, args, out_dir: Path):
         if not ok:
             record = {
                 "case": case["id"], "model": model, "run": n, "command": None,
-                "metrics": {}, "tool_use_counts": {}, "checks": {},
+                "metrics": {}, "tool_use_counts": {}, "tool_uses": [], "checks": {},
                 "passed": False, "result_text": "",
                 "crashed": f"warmup red: {evidence[-500:]}",
             }
@@ -320,6 +334,7 @@ def run_one(case, model, n, args, out_dir: Path):
         "command": cmd,
         "metrics": build_metrics(result_event, wall_ms),
         "tool_use_counts": dict(Counter(t["name"] for t in parsed["tool_uses"])),
+        "tool_uses": parsed["tool_uses"],
         "checks": checks,
         "passed": passed,
         "result_text": result_text,
@@ -387,8 +402,9 @@ def build_summary(records):
                 "runs": len(runs),
                 "pass_rate": sum(1 for r in runs if r["passed"]) / len(runs) if runs else None,
                 "mean_cost_usd": _mean([r["metrics"].get("cost_usd") for r in runs]),
-                "mean_input_tokens": _mean([r["metrics"].get("input_tokens") for r in runs]),
+                "mean_context_tokens": _mean([r["metrics"].get("context_tokens") for r in runs]),
                 "mean_output_tokens": _mean([r["metrics"].get("output_tokens") for r in runs]),
+                "mean_cache_read": _mean([r["metrics"].get("cache_read") for r in runs]),
                 "mean_turns": _mean([r["metrics"].get("num_turns") for r in runs]),
                 "mean_duration_ms": _mean([r["metrics"].get("duration_ms") for r in runs]),
                 "failing_checks": dict(failing.most_common()),
@@ -416,18 +432,19 @@ def render_summary_md(summary: dict) -> str:
 
     lines.append("## Case x model")
     lines.append("")
-    lines.append("| case | model | runs | pass rate | mean cost | mean in tok | mean out tok | mean turns | mean duration |")
-    lines.append("|---|---|---|---|---|---|---|---|---|")
+    lines.append("| case | model | runs | pass rate | mean cost | mean input (incl. cache) | mean cache read | mean out tok | mean turns | mean duration |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|")
     for case_id in sorted(summary["cases"]):
         for model in sorted(summary["cases"][case_id]):
             s = summary["cases"][case_id][model]
             pr = f"{s['pass_rate']*100:.0f}%" if s["pass_rate"] is not None else "n/a"
             cost = f"${s['mean_cost_usd']:.3f}" if s["mean_cost_usd"] is not None else "n/a"
-            in_tok = f"{s['mean_input_tokens']:.0f}" if s["mean_input_tokens"] is not None else "n/a"
+            ctx_tok = f"{s['mean_context_tokens']:.0f}" if s["mean_context_tokens"] is not None else "n/a"
+            cache_read = f"{s['mean_cache_read']:.0f}" if s["mean_cache_read"] is not None else "n/a"
             out_tok = f"{s['mean_output_tokens']:.0f}" if s["mean_output_tokens"] is not None else "n/a"
             turns = f"{s['mean_turns']:.1f}" if s["mean_turns"] is not None else "n/a"
             dur = f"{s['mean_duration_ms']:.0f}ms" if s["mean_duration_ms"] is not None else "n/a"
-            lines.append(f"| {case_id} | {model} | {s['runs']} | {pr} | {cost} | {in_tok} | {out_tok} | {turns} | {dur} |")
+            lines.append(f"| {case_id} | {model} | {s['runs']} | {pr} | {cost} | {ctx_tok} | {cache_read} | {out_tok} | {turns} | {dur} |")
 
     lines += ["", "## Most frequent failing checks per case", ""]
     for case_id in sorted(summary["cases"]):
@@ -449,12 +466,82 @@ def render_summary_md(summary: dict) -> str:
 
 
 # --------------------------------------------------------------------------
+# reverify: redo verify() over an existing --out dir without calling claude
+# --------------------------------------------------------------------------
+
+def reverify(out_dir: Path):
+    """Re-run verify() over every `<case>-<model>-<n>.json` already in
+    out_dir, using each record's stored `result_text` and `tool_uses`
+    against its still-present workdir, then rewrite that record's
+    `checks`/`passed` and the batch summaries. Useful after a verify.py fix
+    so a past run doesn't need a fresh (costly) `claude -p` pass."""
+    all_cases = load_cases()
+    manifest_cache = {}
+    records = []
+    updated = 0
+    skipped = 0
+
+    for path in sorted(out_dir.glob("*.json")):
+        if path.name in ("summary.json",):
+            continue
+        try:
+            record = json.loads(path.read_text())
+        except json.JSONDecodeError:
+            continue
+        if not {"case", "model", "run"} <= record.keys():
+            continue  # not a per-run record
+
+        label = f"{record['case']}-{record['model']}-{record['run']}"
+        case = all_cases.get(record["case"])
+        if case is None:
+            print(f"[reverify] SKIP {label} - unknown case id (not in evals/cases)")
+            skipped += 1
+            records.append(record)
+            continue
+
+        fixture = case["fixture"]
+        if fixture not in manifest_cache:
+            manifest_cache[fixture] = load_manifest(fixture)[0]
+        manifest = manifest_cache[fixture]
+
+        workdir = out_dir / "workdir" / label
+        if manifest is None or not workdir.exists():
+            print(f"[reverify] SKIP {label} - manifest or workdir no longer available")
+            skipped += 1
+            records.append(record)
+            continue
+
+        run_record = {
+            "case": record["case"], "model": record["model"], "run": record["run"],
+            "tool_uses": record.get("tool_uses", []),
+            "result_text": record.get("result_text", ""),
+        }
+        try:
+            checks = verify_mod.verify(workdir, case, manifest, run_record, repo_root=REPO_ROOT)
+        except Exception as e:  # noqa: BLE001
+            checks = {"verify_error": {"passed": False, "evidence": f"{type(e).__name__}: {e}"}}
+
+        record["checks"] = checks
+        record["passed"] = (not record.get("crashed")) and all(c["passed"] for c in checks.values())
+        path.write_text(json.dumps(record, indent=2))
+        print(f"[reverify] {label}: {'PASS' if record['passed'] else 'FAIL'}")
+        updated += 1
+        records.append(record)
+
+    summary = build_summary(records)
+    (out_dir / "summary.json").write_text(json.dumps(summary, indent=2))
+    (out_dir / "summary.md").write_text(render_summary_md(summary))
+    print(f"[reverify] {updated} record(s) re-verified, {skipped} skipped; summary rewritten")
+    return 0
+
+
+# --------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------
 
 def parse_args(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--cases", required=True, help="comma list of case-id prefixes, or all/A/B/C")
+    ap.add_argument("--cases", default=None, help="comma list of case-id prefixes, or all/A/B/C (required unless --reverify)")
     ap.add_argument("--model", default="sonnet", help="comma list of models")
     ap.add_argument("--runs", type=int, default=1)
     ap.add_argument("--plugin-dir", default=None)
@@ -463,15 +550,30 @@ def parse_args(argv=None):
     ap.add_argument("--out", default=None)
     ap.add_argument("--timeout-min", type=float, default=25)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--reverify", action="store_true",
+                     help="re-run verify() over an existing --out dir's per-run JSON + workdirs, "
+                          "without calling claude, and rewrite checks/passed and the summaries")
     warmup = ap.add_mutually_exclusive_group()
     warmup.add_argument("--warmup", dest="warmup", action="store_true")
     warmup.add_argument("--no-warmup", dest="warmup", action="store_false")
     ap.set_defaults(warmup=True)
-    return ap.parse_args(argv)
+    args = ap.parse_args(argv)
+    if not args.reverify and not args.cases:
+        ap.error("--cases is required unless --reverify")
+    if args.reverify and not args.out:
+        ap.error("--reverify requires --out <dir>")
+    return args
 
 
 def main(argv=None):
     args = parse_args(argv)
+
+    if args.reverify:
+        out_dir = Path(args.out)
+        if not out_dir.exists():
+            print(f"--reverify: --out {out_dir} does not exist", file=sys.stderr)
+            return 1
+        return reverify(out_dir)
 
     if args.out:
         out_dir = Path(args.out)

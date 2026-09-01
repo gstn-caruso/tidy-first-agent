@@ -10,6 +10,7 @@ using real `claude -p` runs plus deterministic git/test checks.
 python3 evals/scripts/run.py --cases A1,A2 --model sonnet --runs 2
 python3 evals/scripts/run.py --cases all --model sonnet --dry-run   # print commands only
 python3 evals/scripts/run.py --cases B --model sonnet --baseline    # ablation: no plugin/agent
+python3 evals/scripts/run.py --reverify --out evals/results/<label>  # re-verify, no claude call
 ```
 
 `--cases` matches case-id prefixes (`A1` → `A1-pricer-first.json`), a
@@ -18,6 +19,9 @@ root), `--agent-name` (default `tidy-first:tidier`), `--out` (default
 `evals/results/run-<timestamp>`), `--timeout-min` (default 25),
 `--no-warmup`. Runs are sequential; a missing fixture degrades to a clear
 per-case skip note instead of a crash, in `--dry-run` and real runs alike.
+`--reverify` rewrites an existing `--out` dir's `checks`/`passed` and
+summaries from each run's stored `result_text`/`tool_uses` and workdir —
+for picking up a `verify.py` fix without spending another `claude -p` run.
 
 ## What is measured
 
@@ -34,8 +38,9 @@ per-case skip note instead of a crash, in `--dry-run` and real runs alike.
 `verify.py` implements every check as a pure function of the tidied
 workdir + case + manifest + parsed run record, each wrapped so it reports
 `{"passed": False, "evidence": "error: ..."}` instead of raising. A few
-checks (`commit_subjects`, `pages_match_catalog`, `test_files_untouched`)
-always run for family A — the tidier's own contract. New commits are
+checks (`commit_subjects`, `pages_match_catalog`, `report_citations_match_catalog`,
+`test_files_untouched`) always run for family A — the tidier's own
+contract. New commits are
 counted from an `agent-start` tag (set right after `prepare` runs, before
 `claude -p` starts), not `base` — so `prepare`'s own setup commits (A4
 drops the test dir, A5 adds a test) skip that contract.
@@ -43,12 +48,13 @@ drops the test dir, A5 adds a test) skip that contract.
 ## Reading results
 
 Per run: `evals/results/<label>/<case>-<model>-<n>.json` — metrics (cost,
-tokens, turns, duration), `tool_use_counts`, every `checks[name]` with
+context tokens = input + cache write + cache read, output tokens, turns,
+duration), `tool_use_counts`, `tool_uses`, every `checks[name]` with
 evidence, overall `passed`, and `crashed` (falsy, or timeout / missing
 `result` event + stderr tail). Raw transcripts: `.stream.jsonl` /
 `.stderr.log`. Per batch: `evals/results/<label>/summary.md` (case ×
-model pass rate, mean cost/tokens/turns/duration, top failing checks)
-plus `summary.json`.
+model pass rate, mean cost/context/cache-read/output tokens/turns/
+duration, top failing checks) plus `summary.json`.
 
 ## Testing the harness
 

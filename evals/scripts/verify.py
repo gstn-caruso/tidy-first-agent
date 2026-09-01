@@ -29,14 +29,16 @@ import re
 import shutil
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
 DEFAULT_TEST_TIMEOUT_SEC = 300
 
 SUBJECT_RE = re.compile(r"^refactor\(tidy\): ")
 BODY_PAGE_RE = re.compile(r"ch\.\s*\d+,\s*pp?\.\s*\d+")
-PAGE_NUM_RE = re.compile(r"pp?\.\s*(\d+)")
+CITATION_RE = re.compile(r"ch\.\s*(\d+),?\s*pp?\.\s*(\d+)")
 REMOVED_LINE_RE = re.compile(r"^-(?!--)")
+ADDED_LINE_RE = re.compile(r"^\+(?!\+\+)")
 EDIT_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 
 
@@ -78,33 +80,90 @@ def _new_commits(workdir):
 
 
 # --------------------------------------------------------------------------
-# catalog.md parsing: "| # | Tidying | ... | Page |" -> {name.lower(): page}
+# catalog.md parsing: "| # | Tidying | ... | Page |"
 # --------------------------------------------------------------------------
 
-def load_catalog(catalog_path) -> dict:
+# Part II ("Managing") and Part III ("Theory") don't have their own catalog
+# table (they're not tidyings), but the tidier still cites their chapters —
+# e.g. ch. 21 "First, After, Later, Never" — so their starting pages are
+# hand-transcribed here for citation validation. Chs. 1-15 come from
+# catalog.md instead, since that table is the source of truth for those.
+PART_II_III_CHAPTER_START_PAGE = {
+    16: 35, 17: 39, 18: 43, 19: 47, 20: 49, 21: 51, 22: 57, 23: 61, 24: 65,
+    25: 67, 26: 69, 27: 73, 28: 75, 29: 77, 30: 81, 31: 85, 32: 89, 33: 91,
+}
+
+
+def _catalog_rows(catalog_path) -> list:
+    """Parse a markdown table like catalog.md's into a list of
+    {column_name_lower: cell_text} dicts, one per data row (the header and
+    its `---` separator row excluded)."""
     text = Path(catalog_path).read_text(encoding="utf-8")
-    catalog = {}
-    name_idx = page_idx = None
+    header = None
+    rows = []
     for line in text.splitlines():
         line = line.strip()
         if not line.startswith("|"):
             continue
         cells = [c.strip() for c in line.strip("|").split("|")]
-        if name_idx is None:
-            lowered = [c.lower() for c in cells]
-            if "tidying" in lowered and "page" in lowered:
-                name_idx = lowered.index("tidying")
-                page_idx = lowered.index("page")
+        if header is None:
+            header = [c.lower() for c in cells]
             continue
         if all(re.fullmatch(r"-+", c) for c in cells if c):
             continue  # header separator row
-        if len(cells) <= max(name_idx, page_idx):
+        if len(cells) < len(header):
             continue
-        name = cells[name_idx].strip()
-        m = re.search(r"\d+", cells[page_idx])
+        rows.append(dict(zip(header, cells)))
+    return rows
+
+
+def load_catalog(catalog_path) -> dict:
+    """{tidying name (lowercased): starting page}, chs. 1-15."""
+    catalog = {}
+    for row in _catalog_rows(catalog_path):
+        name = row.get("tidying", "").strip()
+        m = re.search(r"\d+", row.get("page", ""))
         if name and m:
             catalog[name.lower()] = int(m.group())
     return catalog
+
+
+def load_chapter_start_pages(catalog_path) -> dict:
+    """{chapter number: starting page} for the whole book, chs. 1-33:
+    1-15 parsed from catalog.md's '#'/'Page' columns, 16-33 the fixed
+    Part II/III table above."""
+    chapters = {}
+    for row in _catalog_rows(catalog_path):
+        m_num = re.search(r"\d+", row.get("#", ""))
+        m_page = re.search(r"\d+", row.get("page", ""))
+        if m_num and m_page:
+            chapters[int(m_num.group())] = int(m_page.group())
+    chapters.update(PART_II_III_CHAPTER_START_PAGE)
+    return chapters
+
+
+def _extract_chapter_page_citations(text: str) -> list:
+    """[(chapter:int, page:int), ...] for every "ch. N, p. M" (or "pp.")
+    citation in text, in order of appearance."""
+    return [(int(ch), int(pg)) for ch, pg in CITATION_RE.findall(text)]
+
+
+def _catalog_name_pattern(name: str) -> re.Pattern:
+    """Case-insensitive regex for a catalog tidying name, tolerant of a
+    dropped/added trailing 's' on any word (an agent writing "Delete
+    Redundant Comment" or "Guard Clause" should still match). Each word
+    that ends in 's' gets that 's' made optional; each word that doesn't
+    gets an optional trailing 's' — e.g. "Delete Redundant Comments" ->
+    delete\\s+redundants?\\s+comments?, matching both "comment" and
+    "comments" (and, harmlessly, "redundants").
+    """
+    parts = []
+    for word in name.split():
+        if word.lower().endswith("s"):
+            parts.append(re.escape(word[:-1]) + "s?")
+        else:
+            parts.append(re.escape(word) + "s?")
+    return re.compile(r"\s+".join(parts), re.IGNORECASE)
 
 
 # --------------------------------------------------------------------------
@@ -148,53 +207,67 @@ def check_commit_subjects(workdir):
     return {"passed": passed, "evidence": "well-formed" if passed else "; ".join(bad)}
 
 
-def check_pages_match_catalog(workdir, catalog):
-    if not catalog:
+def check_pages_match_catalog(workdir, chapter_pages):
+    """Validates every "ch. N, p. M" citation in each new commit's body
+    against the chapter's starting page (chs. 1-33 — see
+    load_chapter_start_pages), independent of whether the subject names a
+    catalog tidying. This also catches a citation naming a tidying chapter
+    (1-15) with the wrong page, and a citation for a Part II/III chapter
+    (16-33, e.g. "First, After, Later, Never") that used to be skipped
+    entirely because nothing in Part II/III has a subject-name match."""
+    if not chapter_pages:
         return {"passed": True, "evidence": "catalog not available, skipped"}
     commits = _new_commits(workdir)
     if not commits:
         return {"passed": True, "evidence": "no new commits"}
     problems = []
     checked = 0
-    names_by_len = sorted(catalog.items(), key=lambda kv: -len(kv[0]))
     for c in commits:
-        subj_lower = c["subject"].lower()
-        matched_name = matched_page = None
-        for name, page in names_by_len:
-            if name in subj_lower:
-                matched_name, matched_page = name, page
-                break
-        if matched_name is None:
-            continue
-        checked += 1
-        m = PAGE_NUM_RE.search(c["body"])
-        if not m:
-            problems.append(f"{c['sha'][:7]} names '{matched_name}' but body cites no page")
-            continue
-        cited = int(m.group(1))
-        if not (matched_page <= cited <= matched_page + 3):
-            problems.append(
-                f"{c['sha'][:7]} '{matched_name}' expected p.{matched_page}..{matched_page + 3}, got p.{cited}"
-            )
+        for ch, pg in _extract_chapter_page_citations(c["body"]):
+            checked += 1
+            start = chapter_pages.get(ch)
+            if start is None:
+                problems.append(f"{c['sha'][:7]} cites ch.{ch} (outside 1-33) p.{pg}")
+                continue
+            if not (start <= pg <= start + 3):
+                problems.append(f"{c['sha'][:7]} cites ch.{ch} p.{pg}, expected p.{start}..{start + 3}")
     passed = not problems
-    evidence = f"{checked} commit(s) checked against catalog" if passed else "; ".join(problems)
+    evidence = f"{checked} citation(s) checked against catalog" if passed else "; ".join(problems)
     return {"passed": passed, "evidence": evidence}
+
+
+def check_report_citations_match_catalog(run_record, chapter_pages):
+    """Same validation as check_pages_match_catalog, but over the agent's
+    final report text instead of commit bodies — a report table can cite a
+    chapter/page pair with a typo (e.g. "ch. 31, p. 31") even when the
+    commit itself got it right."""
+    text = run_record.get("result_text") or ""
+    citations = _extract_chapter_page_citations(text)
+    if not citations:
+        return {"passed": True, "evidence": "no chapter/page citations in report"}
+    triples = []
+    for ch, pg in citations:
+        start = chapter_pages.get(ch)
+        ok = start is not None and start <= pg <= start + 3
+        triples.append((ch, pg, ok))
+    passed = all(ok for _, _, ok in triples)
+    return {"passed": passed, "evidence": str(triples)}
 
 
 def check_required_tidyings(workdir, case):
     commits = _new_commits(workdir)
-    subjects = " | ".join(c["subject"].lower() for c in commits)
+    subjects = " | ".join(c["subject"] for c in commits)
     required = case.get("expect", {}).get("required_tidyings", [])
-    missing = [t for t in required if t.lower() not in subjects]
+    missing = [t for t in required if not _catalog_name_pattern(t).search(subjects)]
     passed = not missing
     return {"passed": passed, "evidence": "all present" if passed else "missing: " + ", ".join(missing)}
 
 
 def check_forbidden_tidyings(workdir, case):
     commits = _new_commits(workdir)
-    subjects = " | ".join(c["subject"].lower() for c in commits)
+    subjects = " | ".join(c["subject"] for c in commits)
     forbidden = case.get("expect", {}).get("forbidden_tidyings", [])
-    present = [t for t in forbidden if t.lower() in subjects]
+    present = [t for t in forbidden if _catalog_name_pattern(t).search(subjects)]
     passed = not present
     return {"passed": passed, "evidence": "none present" if passed else "found forbidden: " + ", ".join(present)}
 
@@ -322,6 +395,35 @@ def check_decoys_intact(workdir, case, manifest):
     return {"passed": passed, "evidence": f"{checked} decoy(s) intact" if passed else "; ".join(problems)}
 
 
+def _net_removed_lines(diff_text: str) -> list:
+    """A tidying that de-indents (or re-indents) a whole block makes every
+    line in it show up as a removed line in a `--unified=0` diff, even
+    though its content didn't change. So a line only counts as NET removed
+    if its whitespace-stripped content isn't cancelled out by an equally
+    stripped added line: net = multiset(`-` lines, stripped) minus
+    multiset(`+` lines, stripped). A pure re-indent removes and re-adds the
+    same stripped text, so it cancels to zero net-removed occurrences.
+
+    The multiset math runs on stripped text (so indentation-only moves
+    cancel), but the lines returned keep their ORIGINAL, unstripped text —
+    some mess anchors match on exact indentation, and stripping the
+    returned lines would break those even when nothing was re-indented.
+    """
+    removed_raw = [l[1:] for l in diff_text.splitlines() if REMOVED_LINE_RE.match(l)]
+    added_raw = [l[1:] for l in diff_text.splitlines() if ADDED_LINE_RE.match(l)]
+    removed_counts = Counter(x.strip() for x in removed_raw)
+    added_counts = Counter(x.strip() for x in added_raw)
+    remaining = removed_counts - added_counts  # multiset diff: positive counts only
+
+    net_removed_raw = []
+    for raw in removed_raw:
+        key = raw.strip()
+        if remaining.get(key, 0) > 0:
+            net_removed_raw.append(raw)
+            remaining[key] -= 1
+    return net_removed_raw
+
+
 def check_one_mess_per_commit(workdir, manifest):
     commits = _new_commits(workdir)
     messes = manifest.get("messes", [])
@@ -329,8 +431,8 @@ def check_one_mess_per_commit(workdir, manifest):
     problems = []
     for c in commits:
         r = _git(["show", c["sha"], "--format=", "--unified=0"], cwd=workdir)
-        removed = [l[1:] for l in r.stdout.splitlines() if REMOVED_LINE_RE.match(l)]
-        hit_ids = [m["id"] for m in messes if any(re.search(m["anchor"], line) for line in removed)]
+        net_removed_lines = _net_removed_lines(r.stdout)
+        hit_ids = [m["id"] for m in messes if any(re.search(m["anchor"], line) for line in net_removed_lines)]
         mapping[c["sha"][:7]] = hit_ids
         if len(hit_ids) > 1:
             problems.append(f"{c['sha'][:7]}: touches {hit_ids}")
@@ -409,6 +511,34 @@ def check_first_tool(run_record, case):
     return {"passed": passed, "evidence": f"first tool_use: {first.get('name')} input~{input_str[:200]}"}
 
 
+def check_delegates_to(run_record, case):
+    """Like check_first_tool, but the delegating tool_use need not be the
+    very first one — the main session may explore for a turn or two before
+    delegating. Passes if ANY tool_use has the expected name and the
+    expected substring (case-insensitive) in json.dumps(input)."""
+    expected = case.get("expect", {}).get("delegates_to", {})
+    wanted_name = expected.get("name")
+    contains = str(expected.get("input_contains", "")).lower()
+    tool_uses = run_record.get("tool_uses", [])
+    names_in_order = [t.get("name") for t in tool_uses]
+
+    match_input = None
+    for t in tool_uses:
+        if t.get("name") == wanted_name:
+            input_str = json.dumps(t.get("input", {}), ensure_ascii=False)
+            if not contains or contains in input_str.lower():
+                match_input = input_str
+                break
+
+    passed = match_input is not None
+    evidence = f"tool_uses in order: {names_in_order}"
+    if match_input is not None:
+        evidence += f"; first matching {wanted_name} input: {match_input[:200]}"
+    else:
+        evidence += f"; no {wanted_name} tool_use with {contains!r} in its input"
+    return {"passed": passed, "evidence": evidence}
+
+
 def check_must_not_delegate(run_record):
     offenders = []
     for t in run_record.get("tool_uses", []):
@@ -457,10 +587,12 @@ def verify(workdir, case, manifest, run_record, repo_root=None) -> dict:
         manifest["_repo_root"] = str(repo_root)
 
     catalog = {}
+    chapter_pages = {}
     if repo_root is not None:
         cat_path = Path(repo_root) / "skills" / "tidy-first" / "references" / "catalog.md"
         if cat_path.exists():
             catalog = _safe_catalog(cat_path)
+            chapter_pages = _safe_chapter_pages(cat_path)
 
     family = case.get("family")
     checks = {}
@@ -471,7 +603,8 @@ def verify(workdir, case, manifest, run_record, repo_root=None) -> dict:
         checks["commit_count"] = _safe(check_commit_count, workdir, case)
     if family == "A":
         checks["commit_subjects"] = _safe(check_commit_subjects, workdir)
-        checks["pages_match_catalog"] = _safe(check_pages_match_catalog, workdir, catalog)
+        checks["pages_match_catalog"] = _safe(check_pages_match_catalog, workdir, chapter_pages)
+        checks["report_citations_match_catalog"] = _safe(check_report_citations_match_catalog, run_record, chapter_pages)
         checks["test_files_untouched"] = _safe(check_test_files_untouched, workdir, manifest)
     if "required_tidyings" in expect:
         checks["required_tidyings"] = _safe(check_required_tidyings, workdir, case)
@@ -497,6 +630,8 @@ def verify(workdir, case, manifest, run_record, repo_root=None) -> dict:
         checks["tree_unchanged_since_prepare"] = _safe(check_tree_unchanged_since_prepare, workdir, case)
     if "first_tool" in expect:
         checks["first_tool"] = _safe(check_first_tool, run_record, case)
+    if "delegates_to" in expect:
+        checks["delegates_to"] = _safe(check_delegates_to, run_record, case)
     if expect.get("must_not_delegate"):
         checks["must_not_delegate"] = _safe(check_must_not_delegate, run_record)
     if "skill_invoked" in expect:
@@ -510,6 +645,13 @@ def verify(workdir, case, manifest, run_record, repo_root=None) -> dict:
 def _safe_catalog(cat_path):
     try:
         return load_catalog(cat_path)
+    except Exception:
+        return {}
+
+
+def _safe_chapter_pages(cat_path):
+    try:
+        return load_chapter_start_pages(cat_path)
     except Exception:
         return {}
 
