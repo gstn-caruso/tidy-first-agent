@@ -30,12 +30,6 @@
 > ```
 > Or maybe the expressions mean something more specific, like width and height, top and left, run and rise.
 
-## Why
-
-> In this tidying you are taking your hard-won understanding and putting it back into the code. This sets you up to change either one of those expressions more easily (because now they are separated), and to read them more quickly next time the code needs to change.
->
-> As always, separate the tidying commit from the behavior change commit.
-
 ## Chains into (ch. 17)
 
 > The righthand side of the assignment to an explaining variable is a candidate for an explaining helper (after which you may be able to inline the variable). The explanation offered by the variable name may make it possible to delete redundant comments.
