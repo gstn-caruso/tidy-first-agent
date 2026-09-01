@@ -1,70 +1,73 @@
-# tidy-first-agent
+# tidy-first
 
-A Claude Code agent that acts as a **tidier** per *Tidy First? A Personal Exercise in Empirical Software Design* (Kent Beck, O'Reilly 2023), with the book's examples extracted **verbatim** as reference material.
+A Claude Code plugin for Kent Beck's *Tidy First? A Personal Exercise in Empirical Software Design* (O'Reilly, 2023). It ships:
 
-Given a file/diff/function — ideally along with the behavior change that comes next — the agent:
-
-1. builds the safety net (tests green, working tree clean),
-2. reads as a reader and detects which tidyings from the catalog apply, requiring that the trigger match *exactly*,
-3. decides **First / After / Later / Never** (ch. 21) and builds a small plan (ch. 18, 19),
-4. applies **one tidying per commit**, running the tests after each one and reverting if anything goes red,
-5. reports what it applied, what it reverted, and what's left on the *Fun List*, citing chapter and page.
-
-Never changes behavior. Never mixes.
+- **`tidier`**, an agent that applies the book's 15 tidyings to a file, diff or function as separate structural commits — one tidying per commit, tests green before and after, chapter and page cited — after deciding first / after / later / never against the behavior change that comes next. Never changes behavior. Never mixes.
+- **`tidy-first`**, an inline skill for the main session: what a tidying is, the catalog, the four questions of ch. 21, and how to hand the work to `tidier`.
+- **References**: the parts of the book the agent actually reads, verbatim and trimmed to what a tidier needs — one file per tidying, the decision rules of Part II, the forces of Part III, and per-language notes (Java for now).
+- **Evals**: a runner over `claude -p` that measures whether the agent does the right thing on a seeded Java fixture, and what it costs.
 
 ## Layout
 
 ```
-agents/tidier.md        the agent (frontmatter + prompt); what gets installed to ~/.claude/agents/
-examples/               Part I — the 15 tidyings, one full chapter per file, verbatim from the book
-examples/README.md      catalog index
-managing/               Part II — Separate Tidying, Chaining, Batch Sizes, Rhythm, Getting Untangled, First/After/Later/Never
-managing/README.md      index
-theory/                 Part III — design, structure vs. behavior, economics, reversibility, coupling, cohesion, Conclusion
-theory/README.md        index; each chapter closes with a "For the tidier" block (the decision rule the agent takes from it)
-install.sh              copies the agent to ~/.claude/agents/tidier.md
-assets/                 the book (pdf/epub) — gitignored, not pushed; the source everything else was extracted from
+.claude-plugin/plugin.json             the plugin manifest
+agents/tidier.md                       the agent (≈ 7.5 KB, read on every run)
+skills/tidy-first/SKILL.md             the inline guide (≈ 2.8 KB)
+skills/tidy-first/references/
+  catalog.md                           the 15 tidyings in one table, with pages
+  tidyings/NN-<name>.md                chs. 1–15: prompt, move, before/after, caveats, chaining — read only for the tidyings applied
+  deciding.md                          chs. 16–21: separate tidying, chaining table, batch sizes, rhythm, getting untangled, first/after/later/never
+  forces.md                            chs. 22–33: the rule the tidier takes from each chapter and the quote it rests on
+  languages/java.md                    test command and Java caveats per tidying
+evals/                                 cases, fixture, hidden tests, runner, verifier, results summaries
+assets/                                the book (pdf/epub) — gitignored, never pushed
 ```
 
-The agent reports in the language the task was given in, and reads top to bottom: role → *Contract* (seven non-negotiable rules) → *Inputs* → *Workflow* (safety net, read, detect, decide, apply, report) → *Report format* → *Reference* (where the book is and when to read what, a compact catalog of Part I, the forces of Part III).
-
-The three directories hold the book **verbatim** (Parts I–III, chapters 1–33), split under **English** headings. The agent reads `examples/NN-*.md` before applying each tidying to verify the move matches the book's, `managing/21` and `theory/27` when the first/after/later/never decision isn't obvious, and `theory/29` and `theory/32` when the mess is coupling. If the directories aren't present, it works from the catalog and forces table embedded in the prompt, and says so.
+Every line that starts with `>` under `references/` is the book, verbatim; `evals/scripts/check_verbatim.py` fails if one is altered. The only authored prose in the references is the rule bullets in `forces.md` and the catalog table.
 
 ## Install
 
+For one session:
+
 ```sh
-./install.sh
+claude --plugin-dir ~/Code/tidy-first-agent
 ```
 
-Copies `agents/tidier.md` to `~/.claude/agents/tidier.md`. Claude Code re-reads `~/.claude/agents/` between turns: in an open session, `tidier` shows up in the agent list from the next message on (otherwise, restart the session).
+Permanently, as a skills-dir plugin (no marketplace needed):
+
+```sh
+ln -s ~/Code/tidy-first-agent ~/.claude/skills/tidy-first
+```
+
+Claude Code then loads it as `tidy-first@skills-dir`: the agent is `tidy-first:tidier` (or just `tidier` when unambiguous) and the skill is `/tidy-first:tidy-first`. After editing, `/reload-plugins`.
 
 ## Use
 
-From a Claude Code session, in a repo with tests:
+In a repo with tests:
 
-> Use the `tidier` agent on `src/orders.py`. The behavior change that comes next: support volume discounts in `price_for()`.
+> Use `tidier` on `src/main/java/orders/OrderPricer.java`. The behavior change that comes next: volume discounts in `priceFor()`. Tests: `mvn -q test`.
 
-Or with no behavior change in sight ("read to understand" mode, more conservative):
+With nothing planned (comprehension mode, more conservative):
 
-> Do a Tidy First pass with `tidier` on `lib/parser.js`.
+> Do a Tidy First pass with `tidier` on `OrderParser.java`.
 
-Or after a change that already landed and exposed the mess (*after* mode, ch. 21):
+After a change that just landed (*after* mode, ch. 21):
 
-> I just merged the volume discount into `price_for()`. Tidy after with `tidier`.
+> I just merged the second date format into `parse()`. Tidy after with `tidier`.
 
-What you can hand it: the target, the next behavior change (or the one that just landed), the test command (if not, it detects one), and trailers for the commits.
+To plan without touching code, ask the main session which tidyings apply; the `tidy-first` skill answers from the catalog and the chapter files.
 
-## What it does NOT do
+## What it does not do
 
-- Behavior changes, not even a "while I'm at it" bugfix.
-- Big refactors: extracting an object/service, new abstractions — the book explicitly puts these out of scope for a tidying (ch. 17), and, for services, marks them as hard to undo (ch. 28).
-- Continuing to tidy past what serves the next behavior change: "Save the tidying binge for later" (ch. 33).
-- Working on a live Cuis image: there, the shared state is the image, not the working tree; use `cuis-tcr-tdd-driver`.
+- Behavior changes, not even a "while I'm at it" bug fix.
+- Refactorings: extracting a class or a service, new abstractions — out of scope for a tidying (ch. 17) and hard to undo (ch. 28). They go on the Fun List.
+- Tidying past what serves the next behavior change ("just enough", ch. 33).
+- Work on a live Cuis image — there the shared state is the image, not the working tree.
 
-## Relationship with the skill `tidy-first`
+## Evals
 
-The skill `~/.claude/skills/tidy-first/` is the **inline** guide (theory, when to load it, Java translations). This agent is the **worker**: starts cold, applies, and commits. They're independent; the agent brings its own examples.
+See `evals/README.md`. Runs go through `claude -p` under the account's subscription; the cost figures in the summaries are the CLI's own estimates, used only to compare models and iterations.
 
 ## Source
 
-Kent Beck, *Tidy First? A Personal Exercise in Empirical Software Design*, O'Reilly Media, 2023. ISBN 978-1-098-15124-9. Quotes are from the book; the examples are in Beck's original pseudocode.
+Kent Beck, *Tidy First? A Personal Exercise in Empirical Software Design*, O'Reilly Media, 2023. ISBN 978-1-098-15124-9. The examples are in Beck's original pseudocode.
