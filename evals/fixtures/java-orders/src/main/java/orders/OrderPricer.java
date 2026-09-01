@@ -16,7 +16,6 @@ public class OrderPricer {
             } else {
                 shipping = shippingCost(subtotal);
             }
-            // add the shipping cost to the total
             total += shipping;
             return total;
         }
