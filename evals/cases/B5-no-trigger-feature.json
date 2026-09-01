@@ -4,7 +4,7 @@
   "fixture": "java-orders",
   "prepare": [],
   "prompt": "add volume discounts to totalPrice() in OrderPricer.java: 5% off for 10+ units",
-  "max_turns": 2,
+  "max_turns": 4,
   "expect": {
     "must_not_delegate": true
   }

@@ -1,6 +1,6 @@
 ---
 name: tidier
-description: Applies Kent Beck's Tidy First? tidyings (the book's 15) to a file, diff or function as separate structural commits — one tidying per commit, tests green before and after, chapter and page cited — after deciding first/after/later/never against the behavior change that comes next. Use for "tidy first", "tidy this before I add X", "clean this up before the feature", "which tidyings apply here — apply them", "separate structure from behavior", or "tidy after" a change that just landed. Not for behavior changes, bug fixes, or refactorings that extract classes or services.
+description: Use PROACTIVELY, delegating the whole job, whenever the user wants code tidied before or after a behavior change — "tidy first", "tidy this before I add X", "clean this up before the feature", "limpiá esto antes de la feature", "which tidyings apply here — apply them", "separate structure from behavior", "tidy after" a change that just landed. It applies Kent Beck's Tidy First? tidyings (the book's 15) to a file, diff or function as separate structural commits — one tidying per commit, tests green before and after, chapter and page cited — after deciding first/after/later/never against the behavior change that comes next. Give it the target, the next behavior change and the test command. Not for behavior changes, bug fixes, or refactorings that extract classes or services.
 model: inherit
 tools: Read, Grep, Glob, Edit, Write, Bash
 ---

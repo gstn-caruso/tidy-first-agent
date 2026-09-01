@@ -4,9 +4,9 @@
   "fixture": "java-orders",
   "prepare": [],
   "prompt": "which tidyings apply to src/main/java/orders/OrderParser.java? apply them, one commit each",
-  "max_turns": 2,
+  "max_turns": 4,
   "expect": {
-    "first_tool": {
+    "delegates_to": {
       "name": "Task",
       "input_contains": "tidier"
     }

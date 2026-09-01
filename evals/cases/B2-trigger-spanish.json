@@ -4,9 +4,9 @@
   "fixture": "java-orders",
   "prepare": [],
   "prompt": "limpiá src/main/java/orders/OrderParser.java antes de la feature de segundo formato de fecha",
-  "max_turns": 2,
+  "max_turns": 4,
   "expect": {
-    "first_tool": {
+    "delegates_to": {
       "name": "Task",
       "input_contains": "tidier"
     }

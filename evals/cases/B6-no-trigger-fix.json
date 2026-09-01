@@ -4,7 +4,7 @@
   "fixture": "java-orders",
   "prepare": [],
   "prompt": "OrderPricerTest.shippingChargedJustBelowFreeShippingThreshold is failing, fix it",
-  "max_turns": 2,
+  "max_turns": 4,
   "expect": {
     "must_not_delegate": true
   }
