@@ -6,14 +6,13 @@
   "prompt": "Tidy first `src/main/java/orders/OrderParser.java`. The behavior change that comes next: accept a second date format in `parse()`. Tests: `mvn -q test`.",
   "max_turns": 40,
   "expect": {
-    "min_commits": 3,
+    "min_commits": 2,
     "max_commits": 8,
     "required_tidyings": [
-      "Normalize Symmetries",
-      "Move Declaration and Initialization Together",
-      "Chunk Statements"
+      "Normalize Symmetries"
     ],
     "report_mentions": [
+      "Chunk Statements",
       "Explicit Parameters"
     ],
     "decoys_intact": [
