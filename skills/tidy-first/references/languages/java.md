@@ -4,7 +4,7 @@ Read once per run when the target is `.java`. Adds to `catalog.md`; the book's p
 
 ## Safety net
 
-- Test command detection: `pom.xml` → `mvn -q test 2>&1 | tail -20`; `gradlew` → `./gradlew test -q 2>&1 | tail -20`; `build.gradle` without wrapper → `gradle test -q`. To scope to one class: `mvn -q -Dtest=<Class> test` / `./gradlew test --tests <FQCN> -q`. Compile errors are red. A green run prints nothing with `-q`; failures print the surefire/gradle summary.
+- Test command detection: `pom.xml` → `mvn -q test 2>&1 | tail -20`; `gradlew` → `./gradlew test -q 2>&1 | tail -20`; `build.gradle` without wrapper → `gradle test -q`. To scope to one class: `mvn -q -Dtest=<Class> test` / `./gradlew test --tests <FQCN> -q`. Compile errors are red. Judge by the exit status (`mvn -q test >/dev/null 2>&1; echo exit=$?`) or by `[ERROR]` / `FAILURE` / `Tests run: …, Failures: N` lines — Maven's own JDK warnings (`sun.misc.Unsafe…`) are noise, not red.
 - What is not in git: `target/`, `build/`, `.idea/` — never commit them; if `git status` shows them, they are dirt (stop, as the contract says).
 
 ## Per tidying
