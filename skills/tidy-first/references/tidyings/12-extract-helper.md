@@ -43,12 +43,6 @@
 >     b()
 > ```
 
-## Helpers are vocabulary
-
-> Fondness is not the only reason to keep helpers around. Frequently you'll find yourself wanting to use your new helper again hours or even minutes after you've created it. Interfaces become tools for thinking about problems. New interfaces emerge when we're ready to think more abstractly, to add words to our design vocabulary.
->
-> Don't worry about using the helper everywhere it might apply. Using the helper can be taken care of in another tidying. (Some tools will automatically identify and modify all the places where a new helper applies. Heaven bless those tools.)
-
 ## Chains into (ch. 17)
 
 > After extracting a helper you may introduce a guard clause, extract explaining constants and variables, or delete redundant comments.
