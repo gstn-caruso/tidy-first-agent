@@ -48,3 +48,9 @@
 > You and your team are going to need to figure out how exactly to reduce the cost of review. In teams with trust and a strong culture, tidyings don't require review. The risk of interactions has been reduced so far that unreviewed tidying doesn't destabilize the software.
 >
 > Getting to the necessary level of safety and trust to eliminate tidying reviews is the work of months. Practice. Experiment. Review errors together.
+
+## For the tidier
+
+- From "Costs that rise as the batch grows": every extra tidying held before integrating raises the chance of a merge conflict and of the batch accidentally changing behavior, and both costs jump by an order of magnitude once they hit — so integrate the small batch rather than accumulating one more.
+- From "Costs that rise as the batch grows": if the tidying you are about to add isn't needed by the next behavior change, that's speculation — end the batch there.
+- From "The cost that rises as it shrinks, and what to do about it": when you feel pulled toward a big batch, check whether the reason is the fixed cost of getting a change reviewed and deployed rather than the code itself — that cost is not a law of physics, and the fix is to make tidying review cheap, not to grow the batch.

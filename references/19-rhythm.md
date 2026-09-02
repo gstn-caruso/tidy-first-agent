@@ -25,3 +25,9 @@
 > Even if at first you tidy a *lot*, soon you will find yourself wanting to make a behavior change in code that's already tidy. Continue for a bit, and most changes will happen in already-tidied areas of the code. Eventually, encountering untidy code will be the exception, even though most of the code in the system hasn't been touched.
 >
 > That's why I'm confident in saying that tidying is a minutes-to-an-hour kind of activity. Yes, sometimes it goes on longer, but not for long.
+
+## For the tidier
+
+- From "Pave the path": tidy where the behavior changes cluster — 80% of the changes land in 20% of the files, so the tidying that pays is the one in the area you are about to change; pave the path where feet already walk.
+- From "Pave the path": treat tidying as a minutes-to-an-hour activity between behavior changes, not as a project — it can run longer when the code is a real mess, but that state doesn't last.
+- From "Pave the path": you never have to tidy the whole system — keep tidying only the spots you actually change and untidy code becomes the exception, even though most of the files are still untouched.

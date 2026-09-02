@@ -78,3 +78,11 @@
 > **Tidy first when:**
 > - It will pay off immediately, either in improved comprehension or in cheaper behavior changes.
 > - You know what to tidy and how.
+
+## For the tidier
+
+- From "Never": choose not to tidy at all only when the behavior of this code is never going to change again — for a truly static system "if it ain't broke, don't fix it" applies, and mess by itself is not a reason to act.
+- From "Later": when the tidying is a big batch with no immediate payoff, neither do it now nor pretend it will never happen — put it on a list of messes and pull an item off that list when you have an hour and don't want to start something big; the same applies to the leftover half of a migration, where finishing the call sites is what finally makes a class of changes cheaper.
+- From "After": tidy after a behavior change when you're going to change this same area again soon, when tidying now is cheaper than tidying later (the context is still fresh and no other change has interfered), and when the cost of tidying is roughly in proportion to the behavior change — an hour's change justifies an hour's tidying; a week's tidying goes on the list instead.
+- From "First": before tidying first, answer four questions — how much harder is the change without it (if tidying doesn't make it easier, don't tidy first), how immediate is the payoff (reading for comprehension counts as immediate), how will it amortize (code you'll change once, limit the tidying; a payoff that repeats for years, go), and how sure are you (tidy the mess you can point at, not the one you speculate about); in general bias toward first, since the tidyings are tiny enough that a wrong call costs little, but stop when tidying becomes an end in itself.
+- From "Summary (verbatim, p. 54)": when the call is still not obvious, decide by the condition that fits — never if this code won't change again and there's nothing to learn from improving it, later if the batch is big, splittable, and pays off only eventually, after if waiting until next time makes tidying more expensive, first if it pays off immediately and you already know what to tidy and how.
