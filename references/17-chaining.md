@@ -38,3 +38,11 @@
 ## Chapter conclusion
 
 > You will begin to flow tidyings together to achieve larger changes to the structure of your code. Be wary of changing too much, too fast. A failed tidying is expensive relative to the cost of a series of successful tidyings. Practice tidyings like the notes of a scale. When the notes are clean and relaxed, you can form them into melodies.
+
+## For the tidier
+
+- From "Why chain tidyings": after finishing a tidying, treat "should I tidy more?" as a decision, not an urge — and if you do continue, make the next step tiny rather than bigger.
+- From "Chaining table (verbatim)": to choose the next tidying, look up the one you just applied in the table and take the follow-on it sets up, instead of rescanning the code from scratch.
+- From "Chaining table (verbatim)": when the chain points at creating a helper object or grouping parameters into an object, stop — the table marks those as out of the scope of tidying; note the abstraction the code revealed and leave it for a design change.
+- From "On comments, to be clear": delete a comment only when it is absolutely, completely redundant, and get it there by moving its information into the code (explaining variable, explaining constant, explaining helper) first.
+- From "Chapter conclusion": stop chaining before you are changing too much too fast — one failed tidying costs more than a series of small successful ones saves.

@@ -1,20 +1,28 @@
 # References — *Tidy First?*, chapters 1–33
 
-Kent Beck, *Tidy First? A Personal Exercise in Empirical Software Design*, O'Reilly, 2023. ISBN 978-1-098-15124-9. Every chapter is here **verbatim**, split under English headings. Chapters 22–33 close with a **For the tidier** block — the decision rule the agent takes from that chapter, the only non-verbatim text in the corpus.
+Kent Beck, *Tidy First? A Personal Exercise in Empirical Software Design*, O'Reilly, 2023. ISBN 978-1-098-15124-9. Every chapter is here **verbatim**, split under English headings. Chapters 16–33 close with a **For the tidier** block — that chapter's decision rules, distilled, the only non-verbatim text in the corpus. Each bullet cites the section it comes from.
 
 Nothing here is loaded automatically. The `tidier` agent carries the catalog in its prompt and opens **one** of these files at a time, when it needs it. This index is the read map.
+
+For chapters 16–33, what gets read is the block, not the chapter — it is around a fifth of the size and it is the part written to be acted on:
+
+```sh
+awk '/^## For the tidier/{f=1} f' references/21-*.md
+```
+
+The chapter body is for quoting from once the decision is made.
 
 ## When to open what
 
 | Situation | Open |
 |---|---|
 | About to apply tidying `N` | `NN-*.md` — its exact prompt, the move, the caveats, and what it chains into |
-| The first/after/later/never call is not obvious | `21-first-after-later-never.md`, then `27-options-versus-cash-flows.md` for the inequality |
-| Tidying and behavior are already tangled in the tree | `20-getting-untangled.md` |
-| Wondering how many tidyings to put in one batch, or when to stop | `18-batch-sizes.md`, `19-rhythm.md` |
-| One tidying seems to open another | `17-chaining.md` |
-| The mess is "if I touch this I have to touch that" | `29-coupling.md`, then `32-cohesion.md` |
-| Deciding whether a change is safe to try at all | `28-reversible-structure-changes.md` |
+| The first/after/later/never call is not obvious | `21-*` — its block carries the whole four-way switch; then `27-*` for the inequality |
+| Tidying and behavior are already tangled in the tree | `20-*` |
+| Wondering how many tidyings to put in one batch, or when to stop | `18-*`, `19-*` |
+| One tidying seems to open another | `17-*` |
+| The mess is "if I touch this I have to touch that" | `29-*`, then `32-*` |
+| Deciding whether a change is safe to try at all | `28-*` |
 | The target is Java | `java.md` — test-command detection and per-tidying Java caveats |
 
 ## Part I — The tidyings (chs. 1–15)

@@ -27,3 +27,9 @@
 > Untangling a ball of yarn starts with noticing that you have a tangle. The sooner you realize the need to untangle, the smaller the job is (and the less important the decision between the strategies becomes). When you first begin consciously tidying, whether first or after, you'll likely miss the transition between "cruising along making changes" and "oh no, what all have I done?" Don't worry. You'll get better at sequencing tidyings and changes over time.
 >
 > Speaking of "first or after," it's time to talk about timing.
+
+## For the tidier
+
+- From "Three options, none of them pretty": once tidyings and behavior changes are already tangled, there are only three exits — ship it as is, untangle it into a sequence of commits or PRs, or discard the work in progress and redo it tidying first — and the one to pick is the one that best explains your intentions to the next person, not the one that reaches working code fastest.
+- From "Three options, none of them pretty": don't let tests that already pass decide for you — that's sunk cost; the option worth experimenting with is discarding and re-implementing, because re-implementing often shows you something new and leaves a coherent chain of commits.
+- From "The sooner you notice, the smaller it is": watch for the tangle while you work — the sooner you catch the shift from "cruising along making changes" to "what have I done here," the smaller the untangling job is and the less the choice between the three strategies matters.

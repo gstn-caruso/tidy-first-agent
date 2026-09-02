@@ -43,3 +43,9 @@
 > Review latency is also an incentive. If code gets reviewed rapidly, then you're encouraged to create more, smaller PRs. Those more-focused PRs encourage even more rapid reviews. Equally, this reinforcing loop can run backward, with slow reviews encouraging larger PRs, further slowing future reviews.
 >
 > Once you get comfortable with tidying, with working in small steps, with working with absolute safety, I encourage you to experiment with not requiring reviews for tidying PRs. This reduces latency further, incentivizing even smaller tidying PRs.
+
+## For the tidier
+
+- From "The ugly loop": tidyings never ride along with a behavior change — they go in their own PR, with as few tidyings per PR as possible, and "the reviewers said the tidying PR was pointless" is not a reason to fold them back in.
+- From "The phases you go through": open a new PR every time you switch between tidying and changing behavior, even when the whole sequence of moves was planned ahead as one intentional chain.
+- From "Incentives": size a PR by whether a reviewer can give useful feedback on it — too big and the feedback is useless, too small and it wanders into the weeds — and split further wherever reviews come back fast, because fast reviews and small PRs reinforce each other.
