@@ -7,7 +7,8 @@
 
 See evals/README.md for the full picture. This module is import-safe (no
 top-level side effects) so evals/scripts/verify.py's `verify()` can be
-exercised directly, and so tests can import parse_stream()/build_command()
+exercised directly, and so tests can import re
+import parse_stream()/build_command()
 without invoking `claude`.
 """
 from __future__ import annotations
@@ -266,6 +267,11 @@ def execute_claude(cmd, cwd, env, timeout_sec):
     return stdout, stderr, timed_out, wall_ms
 
 
+class UsageLimit(RuntimeError):
+    """The subscription window is exhausted: every further run would return the
+    same one-turn message, so the batch stops here (exit code 3)."""
+
+
 def run_one(case, model, n, args, out_dir: Path):
     label = f"{case['id']}-{model}-{n}"
     fixture_dir = FIXTURES_DIR / case["fixture"]
@@ -314,6 +320,10 @@ def run_one(case, model, n, args, out_dir: Path):
         crashed += "; stderr tail: " + stderr[-1000:]
 
     result_text = (result_event or {}).get("result", "") or ""
+    if not crashed and re.search(r"hit your (session|weekly|usage) limit|usage limit reached", result_text, re.I) \
+            and (result_event or {}).get("num_turns", 0) <= 1:
+        crashed = "usage limit: " + result_text.strip()[:160]
+        raise UsageLimit(crashed)
     run_record = {
         "case": case["id"], "model": model, "run": n,
         "tool_uses": parsed["tool_uses"],
@@ -594,6 +604,7 @@ def main(argv=None):
     records = []
     total = len(cases) * len(models) * args.runs
     done = 0
+    aborted = None
     for case in cases:
         for model in models:
             for n in range(1, args.runs + 1):
@@ -602,7 +613,16 @@ def main(argv=None):
                 if args.dry_run:
                     dry_run_one(case, model, n, args, out_dir)
                 else:
-                    records.append(run_one(case, model, n, args, out_dir))
+                    try:
+                        records.append(run_one(case, model, n, args, out_dir))
+                    except UsageLimit as e:
+                        aborted = str(e)
+                        print(f"\nABORT: {aborted} — stopping the batch; rerun the same command after the reset", file=sys.stderr)
+                        break
+            if aborted:
+                break
+        if aborted:
+            break
 
     if args.dry_run:
         print(f"dry-run: {total} command(s) printed, no claude invocations made")
@@ -612,7 +632,7 @@ def main(argv=None):
     (out_dir / "summary.json").write_text(json.dumps(summary, indent=2))
     (out_dir / "summary.md").write_text(render_summary_md(summary))
     print(f"summary written to {out_dir / 'summary.md'}")
-    return 0
+    return 3 if aborted else 0
 
 
 if __name__ == "__main__":
