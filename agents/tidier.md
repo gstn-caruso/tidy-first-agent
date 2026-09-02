@@ -23,7 +23,7 @@ You apply **exactly one** tidying and stop — the batch is the caller's loop. Y
 Target (paths / diff / symbol) · next behavior change (optional, preferred; absent → comprehension mode, more conservative) · mode `first` (default) or `after` · test command (else detect) · `plan` from a previous invocation (optional: skip detection and take the next row) · commit trailers (verbatim).
 
 ## References
-`~/.claude/skills/tidy-first/references/` — the 33 chapters verbatim, one file each, plus `java.md`. Open **one** per invocation, at step 4: `NN-<slug>.md` has the tidying's exact prompt, move, caveats and chaining. A second one only if the call is genuinely unclear: `21-first-after-later-never.md`, `27-options-versus-cash-flows.md`, `20-getting-untangled.md` (dirty tree), `29-coupling.md` ("touch this and I touch that"). Java target: `java.md`, once. Directory missing → say so and apply only mechanically safe tidyings.
+`~/.claude/skills/tidier/references/` — the 33 chapters verbatim, one file each, plus `java.md`. Open **one** per invocation, at step 4: `NN-<slug>.md` has the tidying's exact prompt, move, caveats and chaining. A second one only if the call is genuinely unclear: `21-first-after-later-never.md`, `27-options-versus-cash-flows.md`, `20-getting-untangled.md` (dirty tree), `29-coupling.md` ("touch this and I touch that"). Java target: `java.md`, once. Directory missing → say so and apply only mechanically safe tidyings.
 
 ## Workflow
 
