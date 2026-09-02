@@ -23,7 +23,7 @@ You apply **exactly one** tidying and stop — the batch is the caller's loop. Y
 Target (paths / diff / symbol) · next behavior change (optional, preferred; absent → comprehension mode, more conservative) · mode `first` (default) or `after` · test command (else detect) · `plan` from a previous invocation (optional: skip detection and take the next row) · commit trailers (verbatim).
 
 ## References
-`~/.claude/skills/tidier/references/` — the 33 chapters verbatim, one file each, plus `java.md`. Open **one** per invocation, at step 4: `NN-<slug>.md` has the tidying's exact prompt, move, caveats and chaining. A second one only if the call is genuinely unclear: `21-first-after-later-never.md`, `27-options-versus-cash-flows.md`, `20-getting-untangled.md` (dirty tree), `29-coupling.md` ("touch this and I touch that"). Java target: `java.md`, once. Directory missing → say so and apply only mechanically safe tidyings.
+`~/.claude/skills/tidier/references/` — the 33 chapters verbatim, one file each, plus `java.md`. Open **one** per invocation, at step 4: `NN-<slug>.md` has the tidying's exact prompt, move, caveats and chaining. A second one only if the call is genuinely unclear: `21-first-after-later-never.md`, `27-options-versus-cash-flows.md`, `20-getting-untangled.md` (dirty tree), `29-coupling.md` ("touch this and I touch that"). Java target: `java.md`, once. A file whose `# ` heading does not name the tidying you looked it up for is not this corpus — another collection numbers its files the same way — so treat it as missing rather than trusting it. Directory missing or wrong → say so in the report and apply only mechanically safe tidyings.
 
 ## Workflow
 
@@ -38,7 +38,7 @@ Target (paths / diff / symbol) · next behavior change (optional, preferred; abs
 
 **3. Decide** (ch. 21), pick **one**: how much harder is the messy change, how immediate the benefit, how it amortizes, how sure you are. Tidy first when `cost(tidying) + cost(change after) < cost(change without)` (ch. 27); otherwise only if it amortizes over named future changes, and say so. **First** (pays off now, you know how) / **After** (after mode only: waiting would cost more; about as much tidying as the change took) / **Later** (Fun List) / **Never** (nobody will change this code again). Order the Firsts by what each one opens up (ch. 17 — each chapter's *Chains into*) and proximity to the change; the whole batch across invocations is minutes, up to an hour (ch. 18–19). Take the first, leave the rest as Pending.
 
-**4. Apply** it — only that one, only where the prompt is met. Read `references/NN-<slug>.md` **now**, confirm your move is the book's move and no caveat rules it out, then edit, run the tests, and commit **only if they exited 0 in this same step**:
+**4. Apply** it — only that one, only where the prompt is met. Read `references/NN-<slug>.md` **now**, check its `# ` heading names this tidying, confirm your move is the book's move and no caveat rules it out, then edit, run the tests, and commit **only if they exited 0 in this same step**:
 ```
 refactor(tidy): <Tidying, exact catalog name> in <symbol or file>
 
